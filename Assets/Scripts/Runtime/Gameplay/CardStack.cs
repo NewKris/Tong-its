@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NordicBibo.Runtime.Utility;
 using UnityEngine;
 using UnityEngine.Events;
@@ -32,11 +33,29 @@ namespace NordicBibo.Runtime.Gameplay {
         public void Shuffle() {
             _cardsInStack.Shuffle();
         }
+
+        public void SetInteractable(bool canBeInteracted) {
+            interactable = canBeInteracted;
+            
+            foreach (PlayingCard playingCard in _cardsInStack) {
+                playingCard.SetInteractable(canBeInteracted);
+            }
+        }
+
+        public void SetLatestCardInteractable(bool canBeInteracted) {
+            if (_cardsInStack.Count == 0) {
+                return;
+            }
+            
+            _cardsInStack.Last().SetInteractable(canBeInteracted);
+        }
         
         public void AddCard(PlayingCard card, bool snapToPivot = false) {
-            card.Interactable = interactable;
+            card.SetInteractable(interactable);
             
             _cardsInStack.Add(card);
+            card.ParentStack = this;
+            
             UpdatePivots(snapToPivot);
             
             onStackUpdated.Invoke(_cardsInStack);
@@ -46,6 +65,8 @@ namespace NordicBibo.Runtime.Gameplay {
             PlayingCard topCard = _cardsInStack[0];
             
             _cardsInStack.Remove(topCard);
+            topCard.ParentStack = null;
+            
             UpdatePivots(snapToPivot);
             
             onStackUpdated.Invoke(_cardsInStack);

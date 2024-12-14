@@ -7,6 +7,9 @@ using UnityEngine.EventSystems;
 
 namespace NordicBibo.Runtime.Gameplay {
     public class PlayingCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler {
+        public static event Action<PlayingCard> OnCardSelected;
+        public static event Action<PlayingCard> OnCardDeSelected; 
+        
         private static readonly int CardIndex = Shader.PropertyToID("_Card_Index");
         private const string HOVER_KEY = "Hover";
         private const string SELECT_KEY = "Select";
@@ -36,29 +39,33 @@ namespace NordicBibo.Runtime.Gameplay {
         private readonly Dictionary<string, RunningEffect> _activeEffects = new Dictionary<string, RunningEffect>();
         private readonly List<string> _expiredEffects = new List<string>(3);
 
+        public int Index { get; private set; }
         public int Tally { get; private set; }
-        public Vector3 TargetPivotPosition { get; set; }
-        public Quaternion TargetPivotRotation { get; set; }
+        public CardStack ParentStack { get; set; }
+        
+        private Vector3 TargetPivotPosition { get; set; }
+        private Quaternion TargetPivotRotation { get; set; }
 
-        public bool Interactable {
-            set => GetComponent<Collider>().enabled = value;
+        public void SetInteractable(bool interactable) {
+            GetComponent<Collider>().enabled = interactable;
+
+            if (!interactable) {
+                DisableAllEffects();
+            }
         }
         
         public void OnPointerEnter(PointerEventData eventData) {
-            RunningEffect hover = CreateNewEffect(hoverEffect, false);
-            _activeEffects[HOVER_KEY] = hover;
+            _activeEffects[HOVER_KEY] = CreateNewEffect(hoverEffect, false);
         }
         
         public void OnPointerExit(PointerEventData eventData) {
-            RunningEffect hover = CreateNewEffect(hoverEffect, true);
-            _activeEffects[HOVER_KEY] = hover;
+            _activeEffects[HOVER_KEY] = CreateNewEffect(hoverEffect, true);
         }
         
         public void OnPointerDown(PointerEventData eventData) {
-            _selected = !_selected;
+            ToggleSelection();
             
-            RunningEffect select = CreateNewEffect(selectEffect, !_selected);
-            _activeEffects[SELECT_KEY] = select;
+            _activeEffects[SELECT_KEY] = CreateNewEffect(selectEffect, !_selected);
 
             PlayDrawSound(_selected ? 1.2f : 0.8f);
         }
@@ -88,6 +95,7 @@ namespace NordicBibo.Runtime.Gameplay {
             TargetPivotRotation = transform.rotation;
             _rotationPivot = TargetPivotRotation;
 
+            Index = cardIndex;
             Tally = PointCalculator.IndexToPoint(cardIndex);
         }
         
@@ -160,6 +168,27 @@ namespace NordicBibo.Runtime.Gameplay {
                 Time.time + effectPlaySpeed, 
                 playReverse
             );
+        }
+
+        private void DisableAllEffects() {
+            if (_activeEffects.ContainsKey(HOVER_KEY) && !_activeEffects[HOVER_KEY].ExpireWhenDone) {
+                _activeEffects[HOVER_KEY] = CreateNewEffect(hoverEffect, true);
+            }
+
+            if (_activeEffects.ContainsKey(SELECT_KEY) && !_activeEffects[SELECT_KEY].ExpireWhenDone) {
+                _activeEffects[SELECT_KEY] = CreateNewEffect(selectEffect, true);
+            }
+        }
+
+        private void ToggleSelection() {
+            _selected = !_selected;
+            
+            if (_selected) {
+                OnCardSelected?.Invoke(this);
+            }
+            else {
+                OnCardDeSelected?.Invoke(this);
+            }
         }
     }
 }

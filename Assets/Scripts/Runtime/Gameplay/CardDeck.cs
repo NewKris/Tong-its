@@ -9,6 +9,10 @@ namespace NordicBibo.Runtime.Gameplay {
         [Header("Deck Options")]
         public GameObject cardPrefab;
         public bool includeJokers;
+
+        private readonly List<PlayingCard> _cardsInGame = new List<PlayingCard>();
+
+        public bool HasSpawnedCards => _cardsInGame.Count != 0;
         
         public void SpawnCards() {
             int cardCount = includeJokers ? 56 : 52;
@@ -21,6 +25,8 @@ namespace NordicBibo.Runtime.Gameplay {
                     .GetComponent<PlayingCard>();
                 
                 card.Initialize(i);
+                
+                _cardsInGame.Add(card);
                 this.AddCard(card, true);
             }
         }
