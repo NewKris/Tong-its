@@ -16,10 +16,13 @@ namespace NordicBibo.Runtime.Gameplay {
         private IEnumerator AddCardsToStack(List<PlayingCard> cards, CardStack toStack) {
             int audioPlayCount = 0;
             
+            cards.ForEach(card => card.SetInteractable(false));
+            
             foreach (PlayingCard playingCard in cards) {
                 playingCard.MoveCardToStack(toStack, audioPlayCount);
-                audioPlayCount++;
+                toStack.Sort();
                 
+                audioPlayCount++;
                 yield return new WaitForSeconds(moveCardsSpeed);
             }
         }

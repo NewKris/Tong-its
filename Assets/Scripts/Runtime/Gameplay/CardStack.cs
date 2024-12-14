@@ -36,6 +36,10 @@ namespace NordicBibo.Runtime.Gameplay {
             _cardsInStack.Shuffle();
         }
 
+        public void Sort() {
+            _cardsInStack.Sort(CompareCards);
+        }
+
         public void SetInteractable(bool canBeInteracted) {
             Interactable = canBeInteracted;
             
@@ -144,14 +148,20 @@ namespace NordicBibo.Runtime.Gameplay {
                 if (i > halfCount) {
                     localPos.y *= -1;
                 }
+
+                Quaternion localRot = Quaternion.Euler(0, pivotYRot, localZRot);
                 
                 Pivot pivot = new Pivot() {
                     position = parentPosition + transform.TransformDirection(localPos),
-                    rotation = Quaternion.Euler(0, pivotYRot, parentRotation.eulerAngles.z + localZRot)
+                    rotation = parentRotation * localRot
                 };
 
                 callback(pivot, i);
             }
+        }
+
+        private int CompareCards(PlayingCard a, PlayingCard b) {
+            return Math.Sign(b.Index - a.Index);
         }
     }
 }

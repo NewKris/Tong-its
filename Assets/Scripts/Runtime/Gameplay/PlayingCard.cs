@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 
 namespace NordicBibo.Runtime.Gameplay {
     public class PlayingCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler {
+        // TODO Replace pivots with gameobject parents
+        
         public static event Action<PlayingCard> OnCardSelected;
         public static event Action<PlayingCard> OnCardDeSelected; 
         

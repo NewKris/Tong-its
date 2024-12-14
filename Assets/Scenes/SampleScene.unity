@@ -166,13 +166,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -258,7 +257,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 93806569}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 880017176}
+        m_TargetAssemblyTypeName: NordicBibo.Runtime.Gameplay.PlayerController, Assembly-CSharp
+        m_MethodName: CreateMeld
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &93806569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,13 +352,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -503,13 +513,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -557,13 +566,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -576,6 +584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 332274867}
+  - component: {fileID: 332274868}
   m_Layer: 0
   m_Name: Meld Stacks (2)
   m_TagString: Untagged
@@ -597,11 +606,29 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1145375487}
-  - {fileID: 636503281}
   - {fileID: 1036155870}
+  - {fileID: 636503281}
   - {fileID: 131696971}
   m_Father: {fileID: 946687057}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &332274868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332274866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65efe7ad679d4459bc669c06fe2088ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveCardsSpeed: 0.05
+  meldStacks:
+  - {fileID: 1145375488}
+  - {fileID: 1036155871}
+  - {fileID: 636503282}
+  - {fileID: 131696972}
 --- !u!1 &410400658
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,13 +673,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -1070,13 +1096,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -1127,7 +1152,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls:
@@ -1171,7 +1195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00b08331e16466ca7b6cf8685a4908d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMeldCreator: {fileID: 0}
+  playerMeldCreator: {fileID: 332274868}
   meldButton: {fileID: 93806568}
   discardButton: {fileID: 983131221}
   playerHand: {fileID: 880017175}
@@ -1631,13 +1655,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -1687,7 +1710,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsFaceUp: 0
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls:
@@ -1751,13 +1773,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -1821,13 +1842,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1145375486}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.11532112, w: 0.9933283}
-  m_LocalPosition: {x: 1.58, y: -1.61, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.11636791, w: 0.9932062}
+  m_LocalPosition: {x: 1.565, y: -1.625, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 332274867}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -13.244}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -13.365}
 --- !u!114 &1145375488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1840,13 +1861,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -1896,7 +1916,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsFaceUp: 0
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls:
@@ -1960,13 +1979,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -2313,7 +2331,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsFaceUp: 0
   onlyTopCard: 1
-  alwaysResetSelection: 1
   onStackUpdated:
     m_PersistentCalls:
       m_Calls:
@@ -2486,6 +2503,55 @@ Transform:
   m_Children:
   - {fileID: 2039308608}
   - {fileID: 1710935613}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1825786342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1825786344}
+  - component: {fileID: 1825786343}
+  m_Layer: 0
+  m_Name: Pivot test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1825786343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825786342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddfb3a0fcd5f4fbab78f9e52b5eb4f18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardsFaceUp: 0
+  rotationOffset: 0.6
+  positionOffset: {x: 0.44, y: 0.002, z: 0}
+  heightScaling: 1
+  drawCount: 52
+--- !u!4 &1825786344
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825786342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 11.65, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1836845301
@@ -2666,13 +2732,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -2971,7 +3036,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsFaceUp: 1
   onlyTopCard: 1
-  alwaysResetSelection: 1
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -3075,13 +3139,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc27089e00b34b48a62c3edf9f7f7d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsFaceUp: 0
+  cardsFaceUp: 1
   onlyTopCard: 0
-  alwaysResetSelection: 0
   onStackUpdated:
     m_PersistentCalls:
       m_Calls: []
-  rotationOffset: 2
+  rotationOffset: -2
   positionOffset: {x: 0.15, y: 0.02, z: -0.1}
   heightScaling: 0.1
   drawCount: 13
@@ -3415,3 +3478,4 @@ SceneRoots:
   - {fileID: 1932404139}
   - {fileID: 212649752}
   - {fileID: 1789631546}
+  - {fileID: 1825786344}

@@ -53,7 +53,10 @@ namespace NordicBibo.Runtime.Gameplay {
                 stockStack.SetInteractable(false);
             }
             
-            // TODO here
+            cards.ForEach(card => _selectedCards.Remove(card));
+            
+            playerMeldCreator.CreateNewMeld(cards);
+            UpdateButtons();
         }
         
         public void DiscardCard() {
