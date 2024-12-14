@@ -29,13 +29,14 @@ namespace NordicBibo.Runtime.Gameplay {
             
             for (int i = 1; i < cards.Count; i++) {
                 if (cards[i] - previous == 1) {
+                    previous = cards[i];
                     continue;
                 }
-                
+              
                 allAreConsecutive = false;
                 break;
             }
-
+            
             return allAreSameRow && allAreConsecutive;
         }
         

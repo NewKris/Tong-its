@@ -29,7 +29,8 @@ namespace NordicBibo.Runtime.Gameplay {
             
             yield return DealCards();
 
-            int playerTurn = 0;
+            yield return new WaitForSeconds(0.25f);
+            
             playerController.StartTurn();
         }
         
@@ -44,16 +45,12 @@ namespace NordicBibo.Runtime.Gameplay {
             float t = 0;
             while (dealtCount < maxDealCount) {
                 if (t > dealSpeed) {
-                    PlayingCard card = cardDeck.Pop();
+                    PlayingCard card = cardDeck.Peek();
+                    card.MoveCardToStack(playerHands[targetPlayerHand], audioPlays);
                     
-                    card.PlayBatchDrawSound(audioPlays);
-                    audioPlays++;
-                    
-                    playerHands[targetPlayerHand].AddCard(card);
-
                     targetPlayerHand = (targetPlayerHand + 1) % playerHands.Length;
-                    
                     dealtCount++;
+                    audioPlays++;
                     t = 0;
                 }
                 

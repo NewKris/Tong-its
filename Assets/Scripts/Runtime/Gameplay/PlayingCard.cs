@@ -46,12 +46,16 @@ namespace NordicBibo.Runtime.Gameplay {
         private Vector3 TargetPivotPosition { get; set; }
         private Quaternion TargetPivotRotation { get; set; }
 
+        public void MoveCardToStack(CardStack toStack, int audioPlays = 0) {
+            ResetSelection();
+            ParentStack.RemoveCard(this);
+            toStack.AddCard(this);
+            PlayBatchDrawSound(audioPlays);
+        }
+        
         public void SetInteractable(bool interactable) {
             GetComponent<Collider>().enabled = interactable;
-
-            if (!interactable) {
-                DisableAllEffects();
-            }
+            ResetSelection();
         }
         
         public void OnPointerEnter(PointerEventData eventData) {
@@ -99,16 +103,6 @@ namespace NordicBibo.Runtime.Gameplay {
             Tally = PointCalculator.IndexToPoint(cardIndex);
         }
         
-        public void PlayDrawSound(float pitch = 1) {
-            _drawSound.pitch = 1;
-            _drawSound.Play();
-        }
-
-        public void PlayBatchDrawSound(int timesPlayed) {
-            _drawSound.pitch = Mathf.Min(1 + pitchStep * timesPlayed, maxPitch);
-            _drawSound.Play();
-        }
-
         private void Awake() {
             _drawSound = GetComponent<AudioSource>();
         }
@@ -136,6 +130,17 @@ namespace NordicBibo.Runtime.Gameplay {
             
             transform.localScale = Vector3.one + _transformOffset.scale;
         }
+        
+        private void PlayDrawSound(float pitch = 1) {
+            _drawSound.pitch = pitch;
+            _drawSound.Play();
+        }
+
+        private void PlayBatchDrawSound(int timesPlayed) {
+            _drawSound.pitch = Mathf.Min(1 + pitchStep * timesPlayed, maxPitch);
+            _drawSound.Play();
+        }
+
 
         private void StepEffects() {
             _expiredEffects.Clear();
@@ -168,6 +173,11 @@ namespace NordicBibo.Runtime.Gameplay {
                 Time.time + effectPlaySpeed, 
                 playReverse
             );
+        }
+        
+        private void ResetSelection() {
+            _selected = false;
+            DisableAllEffects();
         }
 
         private void DisableAllEffects() {

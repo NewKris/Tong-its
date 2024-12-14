@@ -4,6 +4,7 @@ using System.Linq;
 using NordicBibo.Runtime.Utility;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace NordicBibo.Runtime.Gameplay {
     public struct Pivot {
@@ -14,8 +15,8 @@ namespace NordicBibo.Runtime.Gameplay {
     public class CardStack : MonoBehaviour {
         private static Mesh GizmoMesh;
         
-        public bool interactable;
         public bool cardsFaceUp;
+        public bool onlyTopCard;
         public UnityEvent<List<PlayingCard>> onStackUpdated;
         
         [Header("Spread")]
@@ -28,6 +29,7 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private readonly List<PlayingCard> _cardsInStack = new List<PlayingCard>(56);
 
+        public bool Interactable { get; private set; }
         public int Count => _cardsInStack.Count;
         
         public void Shuffle() {
@@ -35,43 +37,55 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         public void SetInteractable(bool canBeInteracted) {
-            interactable = canBeInteracted;
+            Interactable = canBeInteracted;
             
-            foreach (PlayingCard playingCard in _cardsInStack) {
-                playingCard.SetInteractable(canBeInteracted);
-            }
-        }
-
-        public void SetLatestCardInteractable(bool canBeInteracted) {
-            if (_cardsInStack.Count == 0) {
-                return;
-            }
-            
-            _cardsInStack.Last().SetInteractable(canBeInteracted);
+            RefreshInteractables();
         }
         
         public void AddCard(PlayingCard card, bool snapToPivot = false) {
-            card.SetInteractable(interactable);
-            
             _cardsInStack.Add(card);
             card.ParentStack = this;
             
             UpdatePivots(snapToPivot);
             
+            if (onlyTopCard) {
+                RefreshInteractables();
+            }
+            else {
+                card.SetInteractable(Interactable);
+            }
+            
             onStackUpdated.Invoke(_cardsInStack);
         }
 
-        public PlayingCard Pop(bool snapToPivot = false) {
-            PlayingCard topCard = _cardsInStack[0];
-            
-            _cardsInStack.Remove(topCard);
-            topCard.ParentStack = null;
+        public void RemoveCard(PlayingCard card, bool snapToPivot = false) {
+            _cardsInStack.Remove(card);
+            card.ParentStack = null;
             
             UpdatePivots(snapToPivot);
-            
             onStackUpdated.Invoke(_cardsInStack);
+            
+            if (onlyTopCard) {
+                RefreshInteractables();
+            }
+        }
 
-            return topCard;
+        public PlayingCard Peek() {
+           return _cardsInStack[0];
+        }
+
+        private void RefreshInteractables() {
+            if (_cardsInStack.Count == 0) {
+                return;
+            }
+            
+            if (onlyTopCard) {
+                _cardsInStack.ForEach(card => card.SetInteractable(false));
+                _cardsInStack.Last().SetInteractable(Interactable);
+            }
+            else {
+                _cardsInStack.ForEach(card => card.SetInteractable(Interactable));
+            }
         }
 
         private void UpdatePivots(bool snapToPivot = false) {
