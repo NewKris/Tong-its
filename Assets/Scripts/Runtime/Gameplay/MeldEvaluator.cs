@@ -16,8 +16,6 @@ namespace NordicBibo.Runtime.Gameplay {
                 return false;
             }
 
-            return true;
-
             return CardsAreStraightFlush(cards) || CardsAreSameRank(cards);
         }
 

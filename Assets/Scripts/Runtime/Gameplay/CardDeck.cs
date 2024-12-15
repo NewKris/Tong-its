@@ -21,13 +21,13 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private void CreateCentralStock(int count) {
             for (int i = 0; i < count; i++) {
-                PlayingCard card = Instantiate(cardPrefab, transform.position, Quaternion.identity)
+                PlayingCard card = Instantiate(cardPrefab, transform.position, transform.rotation)
                     .GetComponent<PlayingCard>();
                 
                 card.Initialize(i);
                 
                 _cardsInGame.Add(card);
-                this.AddCard(card, true);
+                this.AddCard(card);
             }
         }
     }

@@ -18,40 +18,32 @@ namespace NordicBibo.Runtime.Gameplay {
         public int drawCount;
         
         private readonly List<GameObject> _pivots = new List<GameObject>(16);
-        
-        private void UpdatePivots(int pivotCount) {
-            if (_pivots.Count < pivotCount) {
-                AddPivots(pivotCount - _pivots.Count);
-            }
 
-            if (_pivots.Count > pivotCount) {
-                RemoveExcessPivots(_pivots.Count - pivotCount);
-            }
+        public void DestroyPivot(GameObject pivot) {
+            _pivots.Remove(pivot);
+            Destroy(pivot);
             
             ForEachPivotTransform(_pivots.Count, (pos, rot, i) => {
                 _pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
             });
         }
         
-        private void RemoveExcessPivots(int count) {
-            for (int i = _pivots.Count - 1; i >= _pivots.Count - count - 1; i++) {
-                Destroy(_pivots[i]);
-                _pivots.RemoveAt(i);
-            }
-        }
-
-        private void AddPivots(int count) {
-            for (int i = 0; i < count; i++) {
-                GameObject newPivot = new GameObject {
-                    transform = {
-                        parent = transform
-                    }
-                };
+        public GameObject CreatePivot() {
+            GameObject newPivot = new GameObject {
+                transform = {
+                    parent = transform
+                }
+            };
                 
-                _pivots.Add(newPivot);
-            }
-        }
+            _pivots.Add(newPivot);
+            
+            ForEachPivotTransform(_pivots.Count, (pos, rot, i) => {
+                _pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
+            });
 
+            return newPivot;
+        }
+        
         private void ForEachPivotTransform(int pivotCount, Action<Vector3, Quaternion, int> callback) {
             int halfCount = Mathf.FloorToInt(pivotCount / 2f);
             bool evenPivotCount = pivotCount % 2 == 0;

@@ -33,9 +33,9 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private bool _selected;
         private EffectTransform _transformOffset;
-        private Vector3 _positionPivot;
-        private Vector3 _positionPivotVel;
-        private Quaternion _rotationPivot;
+        private Vector3 _positionVel;
+        private Vector3 _scaleVel;
+        private Transform _pivot;
         private AudioSource _drawSound;
         
         private readonly Dictionary<string, RunningEffect> _activeEffects = new Dictionary<string, RunningEffect>();
@@ -44,15 +44,23 @@ namespace NordicBibo.Runtime.Gameplay {
         public int Index { get; private set; }
         public int Tally { get; private set; }
         public CardStack ParentStack { get; set; }
-        
-        private Vector3 TargetPivotPosition { get; set; }
-        private Quaternion TargetPivotRotation { get; set; }
 
         public void MoveCardToStack(CardStack toStack, int audioPlays = 0) {
             ResetSelection();
             ParentStack.RemoveCard(this);
             toStack.AddCard(this);
             PlayBatchDrawSound(audioPlays);
+        }
+
+        public void SetPivot(GameObject pivot) {
+            _pivot = pivot.transform;
+        }
+
+        public GameObject PopPivot() {
+            GameObject pivotObject = _pivot.gameObject;
+            _pivot = transform.root;
+            
+            return pivotObject;
         }
         
         public void SetInteractable(bool interactable) {
@@ -75,32 +83,12 @@ namespace NordicBibo.Runtime.Gameplay {
 
             PlayDrawSound(_selected ? 1.2f : 0.8f);
         }
-
-        public void SetPivot(Pivot pivot) {
-            TargetPivotPosition = pivot.position;
-            TargetPivotRotation = pivot.rotation;
-        }
-        
-        public void SetPivotImmediate(Pivot pivot) {
-            TargetPivotPosition = pivot.position;
-            _positionPivot = pivot.position;
-            _positionPivotVel = Vector3.zero;
-            
-            TargetPivotRotation = pivot.rotation;
-            _rotationPivot = pivot.rotation;
-        }
         
         public void Initialize(int cardIndex) {
             MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
             propertyBlock.SetInt(CardIndex, cardIndex);
             GetComponent<MeshRenderer>().SetPropertyBlock(propertyBlock);
-
-            TargetPivotPosition = transform.position;
-            _positionPivot = TargetPivotPosition;
-
-            TargetPivotRotation = transform.rotation;
-            _rotationPivot = TargetPivotRotation;
-
+            
             Index = cardIndex;
             Tally = PointCalculator.IndexToPoint(cardIndex);
         }
@@ -110,27 +98,39 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         private void Update() {
-            _positionPivot = Vector3.SmoothDamp(
-                _positionPivot, 
-                TargetPivotPosition, 
-                ref _positionPivotVel, 
+            StepEffects();
+            
+            transform.position = Vector3.SmoothDamp(
+                transform.position, 
+                CreateSpecialCasePivotPosition(), 
+                ref _positionVel, 
                 pivotMoveDamping
             );
             
-            _rotationPivot = Quaternion.RotateTowards(
-                _rotationPivot, 
-                TargetPivotRotation, 
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation, 
+                _pivot.rotation * Quaternion.Euler(_transformOffset.rotation), 
                 pivotRotationMaxDelta
             );
-            
-            StepEffects();
 
-            transform.SetPositionAndRotation(
-                _positionPivot + _transformOffset.position,
-                _rotationPivot * Quaternion.Euler(_transformOffset.rotation)
+            transform.localScale = Vector3.SmoothDamp(
+                transform.localScale,
+                _pivot.parent.localScale + _transformOffset.scale,
+                ref _scaleVel,
+                pivotMoveDamping
             );
+        }
+
+        private Vector3 CreateSpecialCasePivotPosition() {
+            Vector3 targetPos = _pivot.position + _pivot.TransformDirection(new Vector3(
+                _transformOffset.position.x,
+                _transformOffset.position.y,
+                0
+            ));
             
-            transform.localScale = Vector3.one + _transformOffset.scale;
+            targetPos.z += _transformOffset.position.z;
+
+            return targetPos;
         }
         
         private void PlayDrawSound(float pitch = 1) {
