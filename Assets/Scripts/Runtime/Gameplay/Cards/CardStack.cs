@@ -1,24 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NordicBibo.Runtime.Gameplay.Utility;
 using NordicBibo.Runtime.Utility;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Cards {
     [RequireComponent(typeof(PivotMaster))]
     public class CardStack : MonoBehaviour {
         public bool onlyTopCard;
         public UnityEvent<List<PlayingCard>> onStackUpdated;
 
-        protected PivotMaster pivots;
-        
+        private PivotMaster _pivots;
         private readonly List<PlayingCard> _cardsInStack = new List<PlayingCard>(56);
 
+        public PlayingCard this[int i] => _cardsInStack[i];
         public int Count => _cardsInStack.Count;
         
         private bool Interactable { get; set; }
+
+        public PlayingCard IndexToCard(int i) {
+            return _cardsInStack.Find(card => card.Index == i);
+        }
+        
+        public List<int> GetCardIndices() {
+            return _cardsInStack.Select(card => card.Index).ToList();
+        }
         
         public void Shuffle() {
             _cardsInStack.Shuffle();
@@ -37,7 +45,7 @@ namespace NordicBibo.Runtime.Gameplay {
         public void AddCard(PlayingCard card) {
             _cardsInStack.Add(card);
             card.ParentStack = this;
-            card.SetPivot(pivots.CreatePivot());
+            card.SetPivot(_pivots.CreatePivot());
             
             if (onlyTopCard) {
                 RefreshInteractables();
@@ -52,7 +60,7 @@ namespace NordicBibo.Runtime.Gameplay {
         public void RemoveCard(PlayingCard card) {
             _cardsInStack.Remove(card);
             card.ParentStack = null;
-            pivots.DestroyPivot(card.PopPivot());
+            _pivots.DestroyPivot(card.PopPivot());
             
             onStackUpdated.Invoke(_cardsInStack);
             
@@ -66,7 +74,7 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         private void Awake() {
-            pivots = GetComponent<PivotMaster>();
+            _pivots = GetComponent<PivotMaster>();
         }
 
         private void RefreshInteractables() {

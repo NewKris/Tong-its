@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using NordicBibo.Runtime.Utility;
 using UnityEngine;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Cards {
     public class CardDeck : CardStack {
         [Header("Deck Options")]
         public GameObject cardPrefab;

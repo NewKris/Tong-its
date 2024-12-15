@@ -1,6 +1,6 @@
 using System;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Utility {
     public static class PointCalculator {
         private const int COLUMN_COUNT = 13;
         private const int ROW_COUNT = 4;

@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NordicBibo.Runtime.Gameplay.CardEffect;
+using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Cards {
     public class PlayingCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler {
         // TODO Replace pivots with gameobject parents
         

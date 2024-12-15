@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Cards {
     public class MeldCreator : MonoBehaviour {
         public float moveCardsSpeed;
         public CardStack[] meldStacks;

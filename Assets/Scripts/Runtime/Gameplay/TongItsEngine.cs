@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Controllers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,20 +10,36 @@ namespace NordicBibo.Runtime.Gameplay {
         public CardDeck cardDeck;
         public int cardsPerPlayer = 12;
         public CardStack[] playerHands;
-        public PlayerController playerController;
+        public TongItsPlayer[] players;
 
         [Header("Juice")] 
-        [Tooltip("Time in seconds between dealt card")] public float dealSpeed;
+        public float dealSpeed;
+
+        private int _playerTurn;
         
         public void StartNewGame() {
             if (!cardDeck.HasSpawnedCards) {
                 cardDeck.SpawnCards();
             }
             
-            StartCoroutine(RunGame());
+            StartCoroutine(RunGameStart());
         }
 
-        private IEnumerator RunGame() {
+        private void Awake() {
+            TongItsPlayer.OnDiscard += EndPlayerTurn;
+        }
+
+        private void OnDestroy() {
+            TongItsPlayer.OnDiscard -= EndPlayerTurn;
+        }
+
+        private void EndPlayerTurn() {
+            players[_playerTurn].EndTurn();
+            _playerTurn = (_playerTurn + 1) % players.Length;
+            players[_playerTurn].StartTurn();
+        }
+
+        private IEnumerator RunGameStart() {
             if (!HasValidGameParameters()) {
                 Debug.LogWarning("Invalid game parameters!");
                 yield break;
@@ -30,8 +48,9 @@ namespace NordicBibo.Runtime.Gameplay {
             yield return DealCards();
 
             yield return new WaitForSeconds(0.25f);
-            
-            playerController.StartTurn();
+
+            _playerTurn = 0;
+            players[0].StartTurn();
         }
         
         private IEnumerator DealCards() {

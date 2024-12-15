@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
-namespace NordicBibo.Runtime.Gameplay {
+namespace NordicBibo.Runtime.Gameplay.Utility {
     public static class MeldEvaluator {
         // TODO Support wildcards
         // TODO Support both high-ace and low-ace
@@ -10,6 +10,11 @@ namespace NordicBibo.Runtime.Gameplay {
         private const int COLUMN_COUNT = 13;
         private const int ROW_COUNT = 4;
         private const int CARD_COUNT = COLUMN_COUNT * ROW_COUNT;
+
+        public static int FindLeastImportantCard(List<int> cards) {
+            cards.Sort(SortByColumn);
+            return cards[^1];
+        }
         
         public static bool IsValidMeld(List<int> cards) {
             if (cards.Count < 3) {
@@ -51,6 +56,10 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private static int GetColumn(int index) {
             return index % COLUMN_COUNT;
+        }
+
+        private static int SortByColumn(int a, int b) {
+            return Math.Sign(GetColumn(a) - GetColumn(b));
         }
     }
 }

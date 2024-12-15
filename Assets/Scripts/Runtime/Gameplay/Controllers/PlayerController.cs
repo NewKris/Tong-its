@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace NordicBibo.Runtime.Gameplay {
-    public class PlayerController : MonoBehaviour {
+namespace NordicBibo.Runtime.Gameplay.Controllers {
+    public class PlayerController : TongItsPlayer {
+        // TODO Bug: If player has 1 card selected in hand at start of round and draws from stock,
+        // the discard button remains not interactable
+        
         public MeldCreator playerMeldCreator;
         
         [Header("Buttons")] 
@@ -19,30 +25,26 @@ namespace NordicBibo.Runtime.Gameplay {
         private bool _hasDrawnCard;
         private readonly List<PlayingCard> _selectedCards = new List<PlayingCard>(16);
 
-        public void StartTurn() {
+        public override void StartTurn() {
             playerHand.SetInteractable(true);
             discardStack.SetInteractable(true);
             stockStack.SetInteractable(true);
 
-            _hasDrawnCard = false;
+            if (discardStack.Count == 0) {
+                DrawFromStock();
+            }
+            else {
+                _hasDrawnCard = false;
+            }
         }
 
-        private void EndTurn() {
+        public override void EndTurn() {
             meldButton.interactable = false;
             discardButton.interactable = false;
             
             playerHand.SetInteractable(false);
             discardStack.SetInteractable(false);
             stockStack.SetInteractable(false);
-        }
-        
-        public void DrawFromStock() {
-            PlayingCard card = stockStack.Peek();
-            
-            card.MoveCardToStack(playerHand);
-            stockStack.SetInteractable(false);
-
-            _hasDrawnCard = true;
         }
 
         public void CreateMeld() {
@@ -65,7 +67,7 @@ namespace NordicBibo.Runtime.Gameplay {
             _selectedCards.Remove(cardToDiscard);
             cardToDiscard.MoveCardToStack(discardStack);
             
-            //EndTurn();
+            this.Discard();
         }
         
         private void OnEnable() {
@@ -76,6 +78,16 @@ namespace NordicBibo.Runtime.Gameplay {
         private void OnDisable() {
             PlayingCard.OnCardSelected -= SelectCard;
             PlayingCard.OnCardDeSelected -= DeSelectCard;
+        }
+        
+        private void DrawFromStock() {
+            PlayingCard card = stockStack.Peek();
+            
+            card.MoveCardToStack(playerHand);
+            stockStack.SetInteractable(false);
+            discardStack.SetInteractable(false);
+
+            _hasDrawnCard = true;
         }
 
         private void SelectCard(PlayingCard card) {
