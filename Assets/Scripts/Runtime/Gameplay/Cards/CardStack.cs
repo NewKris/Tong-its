@@ -67,6 +67,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             if (onlyTopCard) {
                 RefreshInteractables();
             }
+            
         }
 
         public PlayingCard Peek() {

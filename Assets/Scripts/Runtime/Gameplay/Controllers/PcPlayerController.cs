@@ -27,6 +27,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             yield return wait;
             
             if (stockStack.Count > 0) {
+                base.Draw();
                 stockStack.Peek().MoveCardToStack(playerHand);
             }
 

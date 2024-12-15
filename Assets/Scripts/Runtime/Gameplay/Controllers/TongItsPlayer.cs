@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {
     public abstract class TongItsPlayer : MonoBehaviour {
         public static event Action OnDiscard;
+        
+        public VisualEffect drawEffect;
 
         public abstract void StartTurn();
 
@@ -11,6 +14,10 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
 
         protected void Discard() {
             OnDiscard?.Invoke();
+        }
+
+        protected void Draw() {
+            drawEffect.Play();
         }
     }
 }

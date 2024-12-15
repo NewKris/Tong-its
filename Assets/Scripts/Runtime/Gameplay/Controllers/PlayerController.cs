@@ -50,9 +50,10 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public void CreateMeld() {
             List<PlayingCard> cards = GetCardsToMeld();
             
-            if (cards.Any(card => discardStack)) {
+            if (cards.Any(card => card.ParentStack == discardStack)) {
                 _hasDrawnCard = true;
                 stockStack.SetInteractable(false);
+                discardStack.SetInteractable(false);
             }
             
             cards.ForEach(card => _selectedCards.Remove(card));
@@ -81,6 +82,8 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
         
         private void DrawFromStock() {
+            base.Draw();
+            
             PlayingCard card = stockStack.Peek();
             
             card.MoveCardToStack(playerHand);
