@@ -1,21 +1,27 @@
 using System;
 using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {
     public class PlayerMouseController : MonoBehaviour {
         public MousePivot mousePivot;
         public LayerMask cardMask;
-        
+        public LayerMask pivotMask;
+
+        [Header("References")] 
+        public PivotMaster pivotMaster;
+        public CardStack playerHand;
+
+        private bool _isDraggingCard;
         private PlayerControls _controls;
         private PlayingCard _draggingCard;
-        private Transform _draggingCardPreviousPivot;
         
         private void Awake() {
             _controls = new PlayerControls();
 
-            _controls.MouseControls.Click.performed += _ => RayCastCard(ToggleCard);
-            _controls.MouseControls.Hold.performed += _ => RayCastCard(DragCard);
+            _controls.MouseControls.Click.performed += _ => RayCast<PlayingCard>(cardMask, ToggleCard);
+            _controls.MouseControls.Hold.performed += _ => RayCast<PlayingCard>(cardMask, DragCard);
             _controls.MouseControls.Hold.canceled += _ => ReleaseDraggingCard();
             
             _controls.Enable();
@@ -25,34 +31,52 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             _controls.Dispose();
         }
 
+        private void Update() {
+            if (_isDraggingCard) {
+                TryFindNewPivot();
+            }
+        }
+
+        private void TryFindNewPivot() {
+            RayCast<Collider>(pivotMask, pivot => {
+                if (!pivotMaster.Pivots.Contains(pivot.gameObject)) return;
+                
+                int pivotIndex = pivotMaster.Pivots.IndexOf(pivot.gameObject);
+
+                playerHand.MoveCardToIndex(_draggingCard, pivotIndex);
+            });
+        }
+
         private void ToggleCard(PlayingCard card) {
             card.ToggleSelected();
         }
 
         private void DragCard(PlayingCard card) {
             _draggingCard = card;
-            _draggingCardPreviousPivot = card.Pivot;
                 
-            card.Pivot = mousePivot.transform;
-            card.PlayEffects = false;
+            card.TempPivot = mousePivot.transform;
+            pivotMaster.EnableCollisions();
+
+            _isDraggingCard = true;
         }
 
         private void ReleaseDraggingCard() {
             if (!_draggingCard) return;
 
-            _draggingCard.Pivot = _draggingCardPreviousPivot;
-            _draggingCard.PlayEffects = true;
+            _draggingCard.TempPivot = null;
+            pivotMaster.DisableCollisions();
             
             _draggingCard = null;
-            _draggingCardPreviousPivot = null;
+            _isDraggingCard = false;
         }
 
-        private void RayCastCard(Action<PlayingCard> onHitCallback) {
+        private void RayCast<T>(LayerMask mask, Action<T> callback) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            bool rayHit = Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, cardMask); 
-            if (rayHit && hit.collider.TryGetComponent(out PlayingCard card)) {
-                onHitCallback(card);
+            bool rayHit = Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, mask); 
+            
+            if (rayHit && hit.collider.TryGetComponent(out T hitComponent)) {
+                callback(hitComponent);
             }
         }
     }

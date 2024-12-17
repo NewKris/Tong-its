@@ -39,11 +39,11 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         private readonly Dictionary<string, RunningEffect> _activeEffects = new Dictionary<string, RunningEffect>();
         private readonly List<string> _expiredEffects = new List<string>(3);
 
-        public bool PlayEffects { get; set; }
         public int Index { get; private set; }
         public int Tally { get; private set; }
         public CardStack ParentStack { get; set; }
         public Transform Pivot { get; set; }
+        public Transform TempPivot { get; set; }
 
         public void MoveCardToStack(CardStack toStack, int audioPlays = 0) {
             ResetSelection();
@@ -94,7 +94,6 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             
             Index = cardIndex;
             Tally = PointCalculator.IndexToPoint(cardIndex);
-            PlayEffects = true;
         }
         
         private void Awake() {
@@ -103,7 +102,38 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
 
         private void Update() {
             StepEffects();
+
+            if (TempPivot) {
+                FollowTempPivot();
+            }
+            else {
+                FollowStackPivot();
+            }
+        }
+
+        private void FollowTempPivot() {
+            transform.position = Vector3.SmoothDamp(
+                transform.position, 
+                TempPivot.position, 
+                ref _positionVel, 
+                pivotMoveDamping
+            );
             
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation, 
+                TempPivot.rotation,
+                pivotRotationMaxDelta
+            );
+
+            transform.localScale = Vector3.SmoothDamp(
+                transform.localScale,
+                TempPivot.localScale,
+                ref _scaleVel,
+                pivotMoveDamping
+            );
+        }
+        
+        private void FollowStackPivot() {
             transform.position = Vector3.SmoothDamp(
                 transform.position, 
                 CreateTargetPosition(), 
@@ -126,14 +156,10 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         }
 
         private Vector3 CreateTargetScale() {
-            if (PlayEffects) return Pivot.parent.localScale;
-            
             return Pivot.parent.localScale + _transformOffset.scale;
         }
 
         private Quaternion CreateTargetRotation() {
-            if (!PlayEffects) return Pivot.rotation;
-
             return Pivot.rotation * Quaternion.Euler(_transformOffset.rotation);
         }
 
@@ -141,10 +167,6 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             // Only x- and y-axis position offset will be local while z offset will be world
             // This prevents cards that are rotated 180d on the y-axis from having the opposite z-offset
 
-            if (!PlayEffects) {
-                return Pivot.position;
-            }
-            
             Vector3 targetPos = Pivot.position + Pivot.TransformDirection(new Vector3(
                 _transformOffset.position.x,
                 _transformOffset.position.y,

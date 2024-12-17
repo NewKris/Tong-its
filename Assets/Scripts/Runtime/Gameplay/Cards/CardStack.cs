@@ -34,6 +34,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
 
         public void Sort() {
             _cardsInStack.Sort(CompareCards);
+            ReAssignPivots();
         }
 
         public void SetInteractable(bool canBeInteracted) {
@@ -74,6 +75,15 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
            return _cardsInStack[0];
         }
 
+        public void MoveCardToIndex(PlayingCard card, int toIndex) {
+            if (!_cardsInStack.Contains(card)) return;
+
+            _cardsInStack.Remove(card);
+            _cardsInStack.Insert(toIndex, card);
+            
+            ReAssignPivots();
+        }
+
         private void Awake() {
             _pivots = GetComponent<PivotMaster>();
         }
@@ -93,7 +103,18 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         }
         
         private int CompareCards(PlayingCard a, PlayingCard b) {
-            return Math.Sign(b.Index - a.Index);
+            return Math.Sign(a.Index - b.Index);
+        }
+
+        private void ReAssignPivots() {
+            if (_cardsInStack.Count != _pivots.Count) {
+                Debug.LogError("Mismatch count between cards in stack and pivots!");
+                return;
+            }
+            
+            for (int i = 0; i < _cardsInStack.Count; i++) {
+                _cardsInStack[i].Pivot = _pivots[i].transform;
+            }
         }
     }
 }

@@ -8,6 +8,10 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
         
         public bool cardsFaceUp;
         
+        [Header("Collision")]
+        public bool pivotsHaveCollision;
+        public float collisionRadius;
+        
         [Header("Spread")]
         public float rotationOffset = 5;
         public Vector3 positionOffset;
@@ -17,6 +21,8 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
         public int drawCount;
         
         public List<GameObject> Pivots { get; private set; }
+        public GameObject this[int i] => Pivots[i];
+        public int Count => Pivots.Count;
 
         public void DestroyPivot(GameObject pivot) {
             Pivots.Remove(pivot);
@@ -33,6 +39,15 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
                     parent = transform
                 }
             };
+
+            if (pivotsHaveCollision) {
+                SphereCollider col = newPivot.AddComponent<SphereCollider>();
+                col.radius = collisionRadius;
+                col.isTrigger = true;
+                newPivot.layer = LayerMask.NameToLayer("Pivot");
+
+                col.enabled = false;
+            }
                 
             Pivots.Add(newPivot);
             
@@ -41,6 +56,22 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
             });
 
             return newPivot;
+        }
+
+        public void EnableCollisions() {
+            if (!pivotsHaveCollision) return;
+
+            foreach (GameObject pivot in Pivots) {
+                pivot.GetComponent<Collider>().enabled = true;
+            }
+        }
+
+        public void DisableCollisions() {
+            if (!pivotsHaveCollision) return;
+            
+            foreach (GameObject pivot in Pivots) {
+                pivot.GetComponent<Collider>().enabled = false;
+            }
         }
 
         private void Awake() {
@@ -92,15 +123,22 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
 #endif
             }
             
-            Gizmos.color = Color.red;
             
             ForEachPivotTransform(drawCount, (pos, rot, _) => {
+                Gizmos.color = Color.red;
                 Gizmos.DrawWireMesh(
                     GizmoMesh, 
                     transform.TransformPoint(pos), 
                     transform.rotation * rot
                 );
+                
+                Gizmos.color = Color.yellow;
+                if (pivotsHaveCollision) {
+                    Gizmos.DrawWireSphere(transform.TransformPoint(pos), collisionRadius);
+                }
             });
+
+            
         }
     }
 }
