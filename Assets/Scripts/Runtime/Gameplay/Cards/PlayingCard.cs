@@ -6,9 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace NordicBibo.Runtime.Gameplay.Cards {
-    public class PlayingCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler {
-        // TODO Replace pivots with gameobject parents
-        
+    public class PlayingCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
         public static event Action<PlayingCard> OnCardSelected;
         public static event Action<PlayingCard> OnCardDeSelected; 
         
@@ -32,18 +30,20 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         public TransformEffect dragEffect;
 
         private bool _selected;
+        private bool _hovered;
         private EffectTransform _transformOffset;
         private Vector3 _positionVel;
         private Vector3 _scaleVel;
-        private Transform _pivot;
         private AudioSource _drawSound;
         
         private readonly Dictionary<string, RunningEffect> _activeEffects = new Dictionary<string, RunningEffect>();
         private readonly List<string> _expiredEffects = new List<string>(3);
 
+        public bool PlayEffects { get; set; }
         public int Index { get; private set; }
         public int Tally { get; private set; }
         public CardStack ParentStack { get; set; }
+        public Transform Pivot { get; set; }
 
         public void MoveCardToStack(CardStack toStack, int audioPlays = 0) {
             ResetSelection();
@@ -52,13 +52,9 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             PlayBatchDrawSound(audioPlays);
         }
 
-        public void SetPivot(GameObject pivot) {
-            _pivot = pivot.transform;
-        }
-
         public GameObject PopPivot() {
-            GameObject pivotObject = _pivot.gameObject;
-            _pivot = transform.root;
+            GameObject pivotObject = Pivot.gameObject;
+            Pivot = transform.root;
             
             return pivotObject;
         }
@@ -76,8 +72,15 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             _activeEffects[HOVER_KEY] = CreateNewEffect(hoverEffect, true);
         }
         
-        public void OnPointerDown(PointerEventData eventData) {
-            ToggleSelection();
+        public void ToggleSelected() {
+            _selected = !_selected;
+            
+            if (_selected) {
+                OnCardSelected?.Invoke(this);
+            }
+            else {
+                OnCardDeSelected?.Invoke(this);
+            }
             
             _activeEffects[SELECT_KEY] = CreateNewEffect(selectEffect, !_selected);
 
@@ -91,6 +94,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             
             Index = cardIndex;
             Tally = PointCalculator.IndexToPoint(cardIndex);
+            PlayEffects = true;
         }
         
         private void Awake() {
@@ -102,27 +106,46 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             
             transform.position = Vector3.SmoothDamp(
                 transform.position, 
-                CreateSpecialCasePivotPosition(), 
+                CreateTargetPosition(), 
                 ref _positionVel, 
                 pivotMoveDamping
             );
             
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, 
-                _pivot.rotation * Quaternion.Euler(_transformOffset.rotation), 
+                CreateTargetRotation(),
                 pivotRotationMaxDelta
             );
 
             transform.localScale = Vector3.SmoothDamp(
                 transform.localScale,
-                _pivot.parent.localScale + _transformOffset.scale,
+                CreateTargetScale(),
                 ref _scaleVel,
                 pivotMoveDamping
             );
         }
 
-        private Vector3 CreateSpecialCasePivotPosition() {
-            Vector3 targetPos = _pivot.position + _pivot.TransformDirection(new Vector3(
+        private Vector3 CreateTargetScale() {
+            if (PlayEffects) return Pivot.parent.localScale;
+            
+            return Pivot.parent.localScale + _transformOffset.scale;
+        }
+
+        private Quaternion CreateTargetRotation() {
+            if (!PlayEffects) return Pivot.rotation;
+
+            return Pivot.rotation * Quaternion.Euler(_transformOffset.rotation);
+        }
+
+        private Vector3 CreateTargetPosition() {
+            // Only x- and y-axis position offset will be local while z offset will be world
+            // This prevents cards that are rotated 180d on the y-axis from having the opposite z-offset
+
+            if (!PlayEffects) {
+                return Pivot.position;
+            }
+            
+            Vector3 targetPos = Pivot.position + Pivot.TransformDirection(new Vector3(
                 _transformOffset.position.x,
                 _transformOffset.position.y,
                 0
@@ -189,17 +212,6 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
 
             if (_activeEffects.ContainsKey(SELECT_KEY) && !_activeEffects[SELECT_KEY].ExpireWhenDone) {
                 _activeEffects[SELECT_KEY] = CreateNewEffect(selectEffect, true);
-            }
-        }
-
-        private void ToggleSelection() {
-            _selected = !_selected;
-            
-            if (_selected) {
-                OnCardSelected?.Invoke(this);
-            }
-            else {
-                OnCardDeSelected?.Invoke(this);
             }
         }
     }

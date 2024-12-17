@@ -4,6 +4,7 @@ using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {

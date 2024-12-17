@@ -16,14 +16,14 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
         [Header("Debug")] 
         public int drawCount;
         
-        private readonly List<GameObject> _pivots = new List<GameObject>(16);
+        public List<GameObject> Pivots { get; private set; }
 
         public void DestroyPivot(GameObject pivot) {
-            _pivots.Remove(pivot);
+            Pivots.Remove(pivot);
             Destroy(pivot);
             
-            ForEachPivotTransform(_pivots.Count, (pos, rot, i) => {
-                _pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
+            ForEachPivotTransform(Pivots.Count, (pos, rot, i) => {
+                Pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
             });
         }
         
@@ -34,15 +34,19 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
                 }
             };
                 
-            _pivots.Add(newPivot);
+            Pivots.Add(newPivot);
             
-            ForEachPivotTransform(_pivots.Count, (pos, rot, i) => {
-                _pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
+            ForEachPivotTransform(Pivots.Count, (pos, rot, i) => {
+                Pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
             });
 
             return newPivot;
         }
-        
+
+        private void Awake() {
+            Pivots = new List<GameObject>(16);
+        }
+
         private void ForEachPivotTransform(int pivotCount, Action<Vector3, Quaternion, int> callback) {
             int halfCount = Mathf.FloorToInt(pivotCount / 2f);
             bool evenPivotCount = pivotCount % 2 == 0;

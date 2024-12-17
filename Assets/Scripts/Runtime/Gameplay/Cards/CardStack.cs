@@ -45,7 +45,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         public void AddCard(PlayingCard card) {
             _cardsInStack.Add(card);
             card.ParentStack = this;
-            card.SetPivot(_pivots.CreatePivot());
+            card.Pivot = _pivots.CreatePivot().transform;
             
             if (onlyTopCard) {
                 RefreshInteractables();
