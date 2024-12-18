@@ -5,9 +5,14 @@ using UnityEngine;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {
     public class PlayerMouseController : MonoBehaviour {
+        // TODO Bug: You can peek the stock by dragging the top card
+        
+        public static event Action<CardStack> OnCardStackClicked; 
+        
         public MousePivot mousePivot;
         public LayerMask cardMask;
         public LayerMask pivotMask;
+        public LayerMask stackMask;
 
         [Header("References")] 
         public PivotMaster pivotMaster;
@@ -20,7 +25,11 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         private void Awake() {
             _controls = new PlayerControls();
 
-            _controls.MouseControls.Click.performed += _ => RayCast<PlayingCard>(cardMask, ToggleCard);
+            _controls.MouseControls.Click.performed += _ => {
+                RayCast<PlayingCard>(cardMask, ToggleCard);
+                RayCast<CardStack>(stackMask, ClickOnStack);
+            };
+            
             _controls.MouseControls.Hold.performed += _ => RayCast<PlayingCard>(cardMask, DragCard);
             _controls.MouseControls.Hold.canceled += _ => ReleaseDraggingCard();
             
@@ -45,6 +54,10 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
 
                 playerHand.MoveCardToIndex(_draggingCard, pivotIndex);
             });
+        }
+
+        private void ClickOnStack(CardStack stack) {
+            OnCardStackClicked?.Invoke(stack);
         }
 
         private void ToggleCard(PlayingCard card) {

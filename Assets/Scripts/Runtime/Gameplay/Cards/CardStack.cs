@@ -17,7 +17,8 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
 
         public PlayingCard this[int i] => _cardsInStack[i];
         public int Count => _cardsInStack.Count;
-        
+
+        public List<PlayingCard> CardsInStack => _cardsInStack;
         private bool Interactable { get; set; }
 
         public PlayingCard IndexToCard(int i) {

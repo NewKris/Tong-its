@@ -49,17 +49,8 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         public void CreateMeld() {
-            List<PlayingCard> cards = GetCardsToMeld();
-            
-            if (cards.Any(card => card.ParentStack == discardStack)) {
-                _hasDrawnCard = true;
-                stockStack.SetInteractable(false);
-                discardStack.SetInteractable(false);
-            }
-            
-            cards.ForEach(card => _selectedCards.Remove(card));
-            
-            playerMeldCreator.CreateNewMeld(cards);
+            MeldWithStack(_selectedCards, playerMeldCreator.FirstEmptyStack);
+            _selectedCards.Clear();
             UpdateButtons();
         }
         
@@ -75,11 +66,33 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         private void OnEnable() {
             PlayingCard.OnCardSelected += SelectCard;
             PlayingCard.OnCardDeSelected += DeSelectCard;
+            PlayerMouseController.OnCardStackClicked += TryMeldWithStack;
         }
 
         private void OnDisable() {
             PlayingCard.OnCardSelected -= SelectCard;
             PlayingCard.OnCardDeSelected -= DeSelectCard;
+            PlayerMouseController.OnCardStackClicked -= TryMeldWithStack;
+        }
+
+        private void TryMeldWithStack(CardStack stack) {
+            if (_selectedCards.Count == 0) return;
+            
+            if (CanMeldCards(_selectedCards, stack.CardsInStack)) {
+                MeldWithStack(_selectedCards, stack);
+                _selectedCards.Clear();
+                UpdateButtons();
+            }
+        }
+
+        private void MeldWithStack(List<PlayingCard> cards, CardStack stack) {
+            if (cards.Any(card => card.ParentStack == discardStack)) {
+                _hasDrawnCard = true;
+                stockStack.SetInteractable(false);
+                discardStack.SetInteractable(false);
+            }
+            
+            playerMeldCreator.CreateMeld(cards.ToList(), stack);
         }
         
         private void DrawFromStock() {
@@ -111,22 +124,16 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
 
         private void UpdateButtons() {
             discardButton.interactable = CanDiscardSelection();
-            meldButton.interactable = CanMeldSelection();
+            meldButton.interactable = CanMeldCards(_selectedCards.Where(card => card.ParentStack != stockStack));
         }
         
         private PlayingCard GetCardToDiscard() {
             return _selectedCards.FirstOrDefault(card => card.ParentStack == playerHand);
         }
-
-        private List<PlayingCard> GetCardsToMeld() {
-            return _selectedCards
-                .Where(card => card.ParentStack != stockStack)
-                .ToList();
-        }
         
-        private bool CanMeldSelection() {
-            List<int> cardsInPlayerHand = _selectedCards
-                .Where(card => card.ParentStack != stockStack)
+        private static bool CanMeldCards(params IEnumerable<PlayingCard>[] cards) {
+            List<int> cardsInPlayerHand = cards
+                .SelectMany(card => card)
                 .Select(card => card.Index)
                 .ToList();
 
