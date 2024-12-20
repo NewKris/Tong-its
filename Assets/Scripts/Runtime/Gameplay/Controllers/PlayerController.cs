@@ -86,6 +86,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             }
             
             playerMeldCreator.CreateMeld(cards.ToList(), stack);
+            this.CheckForEmptyHand();
         }
         
         private void DrawFromStock() {

@@ -12,7 +12,8 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         private readonly List<PlayingCard> _cardsInGame = new List<PlayingCard>();
 
         public bool HasSpawnedCards => _cardsInGame.Count != 0;
-        public List<PlayingCard> CardsOutsideDeck => _cardsInGame.Where(card => card.ParentStack != this).ToList();
+        public bool HasAllCards => CardsInStack.Count == _cardsInGame.Count;
+        public int TotalCount => _cardsInGame.Count;
         
         public void SpawnCards() {
             int cardCount = includeJokers ? 56 : 52;
