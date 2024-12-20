@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         private readonly List<PlayingCard> _cardsInGame = new List<PlayingCard>();
 
         public bool HasSpawnedCards => _cardsInGame.Count != 0;
+        public List<PlayingCard> CardsOutsideDeck => _cardsInGame.Where(card => card.ParentStack != this).ToList();
         
         public void SpawnCards() {
             int cardCount = includeJokers ? 56 : 52;

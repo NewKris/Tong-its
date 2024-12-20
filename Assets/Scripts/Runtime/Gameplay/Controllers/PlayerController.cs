@@ -18,11 +18,6 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public Button meldButton;
         public Button discardButton;
         
-        [Header("Stacks")]
-        public CardStack playerHand;
-        public CardStack discardStack;
-        public CardStack stockStack;
-
         private bool _hasDrawnCard;
         private readonly List<PlayingCard> _selectedCards = new List<PlayingCard>(16);
 
@@ -58,9 +53,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             PlayingCard cardToDiscard = GetCardToDiscard();
             
             _selectedCards.Remove(cardToDiscard);
-            cardToDiscard.MoveCardToStack(discardStack);
-            
-            this.Discard();
+            base.Discard(cardToDiscard);
         }
         
         private void OnEnable() {
@@ -98,9 +91,6 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         private void DrawFromStock() {
             base.Draw();
             
-            PlayingCard card = stockStack.Peek();
-            
-            card.MoveCardToStack(playerHand);
             stockStack.SetInteractable(false);
             discardStack.SetInteractable(false);
 

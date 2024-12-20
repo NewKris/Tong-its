@@ -9,7 +9,7 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private void Start() {
             if (playOnStart) {
-                engine.StartNewGame();
+                engine.StartNewRound();
             }
         }
     }

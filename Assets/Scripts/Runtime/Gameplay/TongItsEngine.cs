@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Controllers;
 using UnityEngine;
@@ -16,13 +18,14 @@ namespace NordicBibo.Runtime.Gameplay {
         public float dealSpeed;
 
         private int _playerTurn;
+        private bool _gameEnded;
         
-        public void StartNewGame() {
+        public void StartNewRound() {
             if (!cardDeck.HasSpawnedCards) {
                 cardDeck.SpawnCards();
             }
             
-            StartCoroutine(RunGameStart());
+            StartCoroutine(SetUpRound());
         }
 
         private void Awake() {
@@ -35,15 +38,38 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private void EndPlayerTurn() {
             players[_playerTurn].EndTurn();
+            
+            if (_gameEnded) return;
+            
             _playerTurn = (_playerTurn + 1) % players.Length;
             players[_playerTurn].StartTurn();
         }
+        
+        private void EndByTongIts() {
+        }
 
-        private IEnumerator RunGameStart() {
+        private void EndByStockOut() {
+            
+        }
+
+        private void EndByDraw() {
+            
+        }
+
+        private IEnumerator SetUpRound() {
             if (!HasValidGameParameters()) {
                 Debug.LogWarning("Invalid game parameters!");
                 yield break;
             }
+
+            _gameEnded = false;
+
+            List<PlayingCard> cardsOutsideDeck = cardDeck.CardsOutsideDeck;
+            if (cardsOutsideDeck.Count > 0) {
+                yield return ReturnCardsToStock(cardsOutsideDeck);
+            }
+            
+            cardDeck.Shuffle();
             
             yield return DealCards();
 
@@ -54,8 +80,6 @@ namespace NordicBibo.Runtime.Gameplay {
         }
         
         private IEnumerator DealCards() {
-            cardDeck.Shuffle();
-            
             int maxDealCount = playerHands.Length * cardsPerPlayer;
             int dealtCount = 0;
             int targetPlayerHand = 0;
@@ -75,6 +99,16 @@ namespace NordicBibo.Runtime.Gameplay {
                 
                 t += Time.deltaTime;
                 yield return null;
+            }
+        }
+
+        private IEnumerator ReturnCardsToStock(List<PlayingCard> cards) {
+            WaitForSeconds waitForSeconds = new WaitForSeconds(dealSpeed);
+
+            foreach (PlayingCard playingCard in cards) {
+                playingCard.MoveCardToStack(cardDeck);
+                
+                yield return waitForSeconds;
             }
         }
         

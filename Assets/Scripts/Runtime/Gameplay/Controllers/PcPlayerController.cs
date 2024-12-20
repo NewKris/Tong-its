@@ -9,11 +9,6 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
     public class PcPlayerController : TongItsPlayer {
         public float actionDelay;
         
-        [Header("Stacks")]
-        public CardStack playerHand;
-        public CardStack discardStack;
-        public CardStack stockStack;
-        
         public override void StartTurn() {
             StartCoroutine(PlayTurn());
         }
@@ -28,7 +23,6 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             
             if (stockStack.Count > 0) {
                 base.Draw();
-                stockStack.Peek().MoveCardToStack(playerHand);
             }
 
             yield return wait;
@@ -44,8 +38,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             
             if (playerHand.Count > 0) {
                 int leastImportant = MeldEvaluator.FindLeastImportantCard(playerHand.GetCardIndices());
-                playerHand.IndexToCard(leastImportant).MoveCardToStack(discardStack);
-                this.Discard();
+                base.Discard(playerHand.IndexToCard(leastImportant));
             }
         }
     }
