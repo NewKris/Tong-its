@@ -53,7 +53,7 @@ namespace NordicBibo.Runtime.Gameplay
                     ""name"": """",
                     ""id"": ""e7de7381-ea5b-43a1-98e6-82d7e4a6aac9"",
                     ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": ""Hold(duration=0.1)"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Hold"",
