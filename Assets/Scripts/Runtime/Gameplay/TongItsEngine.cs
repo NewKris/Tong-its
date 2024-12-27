@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Chips.Simple;
 using NordicBibo.Runtime.Gameplay.Controllers;
 using NordicBibo.Runtime.Utility;
 using UnityEngine;
@@ -11,12 +12,14 @@ using UnityEngine.UI;
 namespace NordicBibo.Runtime.Gameplay {
     public class TongItsEngine : MonoBehaviour {
         public CardDeck cardDeck;
-        public int cardsPerPlayer = 12;
+        public Dealer dealer;
         public TongItsPlayer[] players;
-        public CardStack[] nonDeckStacks;
-
-        [Header("Juice")] 
-        public float dealSpeed;
+        
+        [Header("Betting")]
+        public ChipHolder bettingPile;
+        public ChipHolder jackpotPile;
+        public int bettingCount;
+        public int jackpotCount;
 
         private int _playerTurn;
         
@@ -69,13 +72,19 @@ namespace NordicBibo.Runtime.Gameplay {
             }
 
             WaitForSeconds actionPadding = new WaitForSeconds(0.25f);
-            
-            yield return ReturnCardsToStock();
-            
-            yield return actionPadding;
+
+            if (!cardDeck.HasAllCards) {
+                yield return dealer.ReturnAllCards();
+                yield return actionPadding;
+            }
+
+            PlaceBets();
+            PlaceJackpot();
             
             cardDeck.Shuffle();
-            yield return DealCards();
+            HideOpponentCards();
+            
+            yield return dealer.DealCards(players);
 
             yield return actionPadding;
 
@@ -83,49 +92,40 @@ namespace NordicBibo.Runtime.Gameplay {
             players[0].StartTurn();
         }
         
-        private IEnumerator DealCards() {
-            int maxDealCount = players.Length * cardsPerPlayer;
-            int dealtCount = 0;
-            int targetPlayerHand = 0;
+        private IEnumerator TallyHands() {
+            yield return new WaitForSeconds(5);
+        }
 
-            int audioPlays = 0;
-            float t = 0;
-            while (dealtCount < maxDealCount) {
-                if (t > dealSpeed) {
-                    PlayingCard card = cardDeck.Peek();
-                    card.MoveCardToStack(players[targetPlayerHand].playerHand, audioPlays);
-                    
-                    targetPlayerHand = (targetPlayerHand + 1) % players.Length;
-                    dealtCount++;
-                    audioPlays++;
-                    t = 0;
-                }
-                
-                t += Time.deltaTime;
-                yield return null;
+        private void PlaceBets() {
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                ChipHolder.MoveChips(tongItsPlayer.chips, bettingPile, bettingCount);
             }
         }
 
-        private IEnumerator ReturnCardsToStock() {
-            WaitForSeconds waitForSeconds = new WaitForSeconds(dealSpeed);
+        private void PlaceJackpot() {
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                ChipHolder.MoveChips(tongItsPlayer.chips, jackpotPile, jackpotCount);
+            }
+        }
+        
+        private void RevealPlayerCards() {
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                if (tongItsPlayer.isMainPlayer) continue;
 
-            int audioPlays = 0;
-            
-            while (!cardDeck.HasAllCards) {
-                foreach (CardStack nonDeckStack in nonDeckStacks) {
-                    if (nonDeckStack.Count == 0) continue;
-                    
-                    nonDeckStack.CardsInStack[0].MoveCardToStack(cardDeck, audioPlays);
-                }
+                tongItsPlayer.playerHand.SetCardFaceUp(true);
+            }
+        }
 
-                audioPlays++;
+        private void HideOpponentCards() {
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                if (tongItsPlayer.isMainPlayer) continue;
                 
-                yield return waitForSeconds;
+                tongItsPlayer.playerHand.SetCardFaceUp(false);
             }
         }
         
         private bool HasValidGameParameters() {
-            return cardDeck.TotalCount - (players.Length * cardsPerPlayer) > 0;
+            return cardDeck.TotalCount - (players.Length * dealer.cardsPerPlayer) > 0;
         }
     }
 }

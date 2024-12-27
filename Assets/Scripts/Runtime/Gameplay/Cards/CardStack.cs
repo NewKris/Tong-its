@@ -21,6 +21,10 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         public List<PlayingCard> CardsInStack => _cardsInStack;
         private bool Interactable { get; set; }
 
+        public void SetCardFaceUp(bool faceUp) {
+            _pivots.SetCardFaceUp(faceUp);
+        }
+        
         public PlayingCard IndexToCard(int i) {
             return _cardsInStack.Find(card => card.Index == i);
         }

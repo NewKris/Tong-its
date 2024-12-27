@@ -1,5 +1,6 @@
 using System;
 using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Chips.Simple;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -7,13 +8,17 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
     public abstract class TongItsPlayer : MonoBehaviour {
         public static event Action OnDiscard;
         public static event Action OnHandEmptied;
-        
-        public VisualEffect drawEffect;
+
+        public bool isMainPlayer;
+        public ChipHolder chips;
         
         [Header("Stacks")]
         public CardStack playerHand;
         public CardStack discardStack;
         public CardStack stockStack;
+        
+        [Header("Effects")]
+        public VisualEffect drawEffect;
 
         public abstract void StartTurn();
 

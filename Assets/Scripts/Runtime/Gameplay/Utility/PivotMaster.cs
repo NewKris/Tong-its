@@ -24,13 +24,15 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
         public GameObject this[int i] => Pivots[i];
         public int Count => Pivots.Count;
 
+        public void SetCardFaceUp(bool faceUp) {
+            cardsFaceUp = faceUp;
+            UpdatePivotTransforms();
+        }
+        
         public void DestroyPivot(GameObject pivot) {
             Pivots.Remove(pivot);
             Destroy(pivot);
-            
-            ForEachPivotTransform(Pivots.Count, (pos, rot, i) => {
-                Pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
-            });
+            UpdatePivotTransforms();
         }
         
         public GameObject CreatePivot() {
@@ -50,10 +52,7 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
             }
                 
             Pivots.Add(newPivot);
-            
-            ForEachPivotTransform(Pivots.Count, (pos, rot, i) => {
-                Pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
-            });
+            UpdatePivotTransforms();
 
             return newPivot;
         }
@@ -76,6 +75,12 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
 
         private void Awake() {
             Pivots = new List<GameObject>(16);
+        }
+
+        private void UpdatePivotTransforms() {
+            ForEachPivotTransform(Pivots.Count, (pos, rot, i) => {
+                Pivots[i].transform.SetLocalPositionAndRotation(pos, rot);
+            });
         }
 
         private void ForEachPivotTransform(int pivotCount, Action<Vector3, Quaternion, int> callback) {
