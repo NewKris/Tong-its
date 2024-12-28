@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 namespace NordicBibo.Runtime.Gameplay {
     public class TongItsEngine : MonoBehaviour {
+        public GlobalAudioPlayer audioPlayer;
         public CardDeck cardDeck;
         public Dealer dealer;
         public TongItsPlayer[] players;
@@ -83,9 +84,6 @@ namespace NordicBibo.Runtime.Gameplay {
                 yield return dealer.ReturnAllCards();
                 yield return actionPadding;
             }
-
-            PlaceBets();
-            PlaceJackpot();
             
             cardDeck.Shuffle();
             
@@ -93,6 +91,11 @@ namespace NordicBibo.Runtime.Gameplay {
 
             yield return actionPadding;
 
+            PlaceBets();
+            PlaceJackpot();
+            
+            yield return actionPadding;
+            
             _playerTurn = 0;
             players[0].StartTurn();
         }
@@ -101,12 +104,16 @@ namespace NordicBibo.Runtime.Gameplay {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 ChipHolder.MoveChips(tongItsPlayer.chips, bettingPile, bettingCount);
             }
+            
+            audioPlayer.PlayChipSound();
         }
 
         private void PlaceJackpot() {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 ChipHolder.MoveChips(tongItsPlayer.chips, jackpotPile, jackpotCount);
             }
+
+            audioPlayer.PlayChipSound();
         }
         
         private bool HasValidGameParameters() {
@@ -125,6 +132,7 @@ namespace NordicBibo.Runtime.Gameplay {
             };
             
             ChipHolder.MoveChips(bettingPile, player.chips, bettingPile.Chips);
+            audioPlayer.PlayChipSound();
             _lastWinner = null;
         }
 
