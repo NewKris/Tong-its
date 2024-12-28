@@ -4521,7 +4521,7 @@ MonoBehaviour:
   pivotsHaveCollision: 0
   collisionRadius: 0
   rotationOffset: 0
-  positionOffset: {x: 0, y: 0, z: -0.1}
+  positionOffset: {x: 0, y: 0, z: 0.1}
   heightScaling: 0
   drawCount: 52
 --- !u!114 &1725493253 stripped

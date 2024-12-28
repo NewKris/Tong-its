@@ -94,6 +94,8 @@ namespace NordicBibo.Runtime.Gameplay {
             PlaceBets();
             PlaceJackpot();
             
+            audioPlayer.PlayChipSound();
+            
             yield return actionPadding;
             
             _playerTurn = 0;
@@ -104,16 +106,12 @@ namespace NordicBibo.Runtime.Gameplay {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 ChipHolder.MoveChips(tongItsPlayer.chips, bettingPile, bettingCount);
             }
-            
-            audioPlayer.PlayChipSound();
         }
 
         private void PlaceJackpot() {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 ChipHolder.MoveChips(tongItsPlayer.chips, jackpotPile, jackpotCount);
             }
-
-            audioPlayer.PlayChipSound();
         }
         
         private bool HasValidGameParameters() {

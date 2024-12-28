@@ -35,6 +35,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         
         public void Shuffle() {
             _cardsInStack.Shuffle();
+            ReAssignPivots();
         }
 
         public void Sort() {
@@ -100,7 +101,8 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             
             if (onlyTopCard) {
                 _cardsInStack.ForEach(card => card.SetInteractable(false));
-                _cardsInStack.Last().SetInteractable(Interactable);
+                int index = _pivots.cardsFaceUp ? _cardsInStack.Count - 1 : 0;
+                _cardsInStack[index].SetInteractable(Interactable);
             }
             else {
                 _cardsInStack.ForEach(card => card.SetInteractable(Interactable));
