@@ -22,6 +22,7 @@ namespace NordicBibo.Runtime.Gameplay {
         public int jackpotCount;
 
         private int _playerTurn;
+        private TongItsPlayer _lastWinner;
         
         public void StartNewRound() {
             if (!cardDeck.HasSpawnedCards) {
@@ -32,6 +33,8 @@ namespace NordicBibo.Runtime.Gameplay {
         }
         
         public void EndByDraw() {
+            TongItsPlayer winner = FindDrawWinner();
+            TryPayoutPlayer(winner);
             StartNewRound();
         }
 
@@ -45,8 +48,8 @@ namespace NordicBibo.Runtime.Gameplay {
             TongItsPlayer.OnHandEmptied -= EndByTongIts;
         }
 
-        private void EndPlayerTurn() {
-            players[_playerTurn].EndTurn();
+        private void EndPlayerTurn(TongItsPlayer playerTurnEnded) {
+            playerTurnEnded.EndTurn();
 
             if (cardDeck.Count == 0) {
                 EndByStockOut();
@@ -57,17 +60,20 @@ namespace NordicBibo.Runtime.Gameplay {
             players[_playerTurn].StartTurn();
         }
         
-        private void EndByTongIts() {
+        private void EndByTongIts(TongItsPlayer playerEmptiedHand) {
+            TryPayoutPlayer(playerEmptiedHand);
             StartNewRound();
         }
 
         private void EndByStockOut() {
+            TongItsPlayer winner = FindStockOutWinner();
+            TryPayoutPlayer(winner);
             StartNewRound();
         }
 
         private IEnumerator SetUpRound() {
             if (!HasValidGameParameters()) {
-                Debug.LogWarning("Invalid game parameters!");
+                Debug.LogError("Invalid game parameters!");
                 yield break;
             }
 
@@ -82,7 +88,6 @@ namespace NordicBibo.Runtime.Gameplay {
             PlaceJackpot();
             
             cardDeck.Shuffle();
-            HideOpponentCards();
             
             yield return dealer.DealCards(players);
 
@@ -90,10 +95,6 @@ namespace NordicBibo.Runtime.Gameplay {
 
             _playerTurn = 0;
             players[0].StartTurn();
-        }
-        
-        private IEnumerator TallyHands() {
-            yield return new WaitForSeconds(5);
         }
 
         private void PlaceBets() {
@@ -108,24 +109,65 @@ namespace NordicBibo.Runtime.Gameplay {
             }
         }
         
-        private void RevealPlayerCards() {
-            foreach (TongItsPlayer tongItsPlayer in players) {
-                if (tongItsPlayer.isMainPlayer) continue;
-
-                tongItsPlayer.playerHand.SetCardFaceUp(true);
-            }
-        }
-
-        private void HideOpponentCards() {
-            foreach (TongItsPlayer tongItsPlayer in players) {
-                if (tongItsPlayer.isMainPlayer) continue;
-                
-                tongItsPlayer.playerHand.SetCardFaceUp(false);
-            }
-        }
-        
         private bool HasValidGameParameters() {
             return cardDeck.TotalCount - (players.Length * dealer.cardsPerPlayer) > 0;
+        }
+
+        private void TryPayoutPlayer(TongItsPlayer player) {
+            // Player must win twice in a row to earn payout
+            
+            _lastWinner?.SetNextWinner(false);
+            
+            if (_lastWinner != player) {
+                _lastWinner = player;
+                _lastWinner.SetNextWinner(true);
+                return;
+            };
+            
+            ChipHolder.MoveChips(bettingPile, player.chips, bettingPile.Chips);
+            _lastWinner = null;
+        }
+
+        private TongItsPlayer FindStockOutWinner() {
+            TongItsPlayer[] winnerCandidates = FindPlayerWithLowestPoints(players);
+
+            if (winnerCandidates.Length == 1) {
+                return winnerCandidates[0];
+            }
+            
+            return FindPlayerWhoLastPickedStockCard(winnerCandidates);
+        }
+        
+        private TongItsPlayer FindDrawWinner() {
+            TongItsPlayer[] winnerCandidates = FindPlayerWithLowestPoints(players);
+            
+            if (winnerCandidates.Length == 1) {
+                return winnerCandidates[0];
+            }
+            
+            // TODO: Make Draw caller lose on ties. Make other players win ties based on who challenged first
+            
+            return FindPlayerWhoLastPickedStockCard(winnerCandidates);
+        }
+
+        private static TongItsPlayer[] FindPlayerWithLowestPoints(TongItsPlayer[] candidates) {
+            int lowest = candidates.Select(tongItsPlayer => tongItsPlayer.Tally).Min();
+
+            return candidates.Where(player => player.Tally == lowest).ToArray();
+        }
+
+        private static TongItsPlayer FindPlayerWhoLastPickedStockCard(TongItsPlayer[] candidates) {
+            float latest = 0;
+            TongItsPlayer candidate = candidates[0];
+            
+            foreach (TongItsPlayer player in candidates) {
+                if (player.StockDrawTime < latest) continue;
+                
+                latest = player.StockDrawTime;
+                candidate = player;
+            }
+
+            return candidate;
         }
     }
 }

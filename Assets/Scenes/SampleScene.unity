@@ -122,6 +122,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &61304554 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+  m_PrefabInstance: {fileID: 1804301697117000026}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &93806566
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,7 +476,7 @@ Transform:
   m_GameObject: {fileID: 160547581}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: 2.18, z: -5}
+  m_LocalPosition: {x: 2, y: 4.72, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1811,6 +1822,7 @@ MonoBehaviour:
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}
   drawEffect: {fileID: 160547583}
+  chipSprite: {fileID: 61304554}
   playerMeldCreator: {fileID: 332274868}
   meldButton: {fileID: 2001832227}
   discardButton: {fileID: 983131221}
@@ -2477,6 +2489,7 @@ MonoBehaviour:
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}
   drawEffect: {fileID: 160547583}
+  chipSprite: {fileID: 1998452181}
   actionDelay: 0.5
 --- !u!1 &1125609900
 GameObject:
@@ -2703,6 +2716,7 @@ MonoBehaviour:
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}
   drawEffect: {fileID: 160547583}
+  chipSprite: {fileID: 1725493253}
   actionDelay: 0.5
 --- !u!1001 &1348386147
 PrefabInstance:
@@ -4015,6 +4029,17 @@ MonoBehaviour:
   positionOffset: {x: 0, y: 0, z: -0.1}
   heightScaling: 0
   drawCount: 52
+--- !u!114 &1725493253 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+  m_PrefabInstance: {fileID: 1961283848}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1789631543
 GameObject:
   m_ObjectHideFlags: 0
@@ -4861,6 +4886,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41984bb682f24ff19b5689b87cc8e89c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1998452181 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+  m_PrefabInstance: {fileID: 1642793096}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2001832225
@@ -5910,6 +5946,18 @@ PrefabInstance:
     - target: {fileID: 4661252977100914799, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798921964820681486, guid: ae663ccf025068548abe49750d5fbc7c, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

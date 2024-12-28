@@ -12,6 +12,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         // TODO Bug: If player has 1 card selected in hand at start of round and draws from stock,
         // the discard button remains not interactable
         
+        [Header("References")]
         public MeldCreator playerMeldCreator;
         
         [Header("Buttons")] 

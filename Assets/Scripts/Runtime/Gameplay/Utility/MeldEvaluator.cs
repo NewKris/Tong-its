@@ -24,6 +24,21 @@ namespace NordicBibo.Runtime.Gameplay.Utility {
             return CardsAreStraightFlush(cards) || CardsAreSameRank(cards);
         }
 
+        public static List<List<int>> FindValidMelds(List<int> cards) {
+            List<List<int>> melds = FindSets(cards);
+            melds.AddRange(FindRuns(cards));
+            
+            return melds;
+        }
+
+        private static List<List<int>> FindSets(List<int> cards) {
+            return new List<List<int>>();
+        }
+        
+        private static List<List<int>> FindRuns(List<int> cards) {
+            return new List<List<int>>();
+        }
+        
         private static bool CardsAreStraightFlush(List<int> cards) {
             int baseRow = GetRow(cards[0]);
             bool allAreSameRow = cards.All(card => GetRow(card) == baseRow);

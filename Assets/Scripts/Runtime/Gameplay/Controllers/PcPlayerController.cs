@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {
     public class PcPlayerController : TongItsPlayer {
+        [Header("PC Settings")]
         public float actionDelay;
         
         public override void StartTurn() {
