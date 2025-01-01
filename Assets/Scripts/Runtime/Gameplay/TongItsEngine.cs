@@ -5,6 +5,7 @@ using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Chips.Simple;
 using NordicBibo.Runtime.Gameplay.Controllers;
+using NordicBibo.Runtime.Gameplay.Ui;
 using NordicBibo.Runtime.Utility;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,10 +23,29 @@ namespace NordicBibo.Runtime.Gameplay {
         public int bettingCount;
         public int jackpotCount;
 
+        [Header("UI")] 
+        public GameEndScreen gameEndScreen;
+
         private int _playerTurn;
         private TongItsPlayer _lastWinner;
+
+        public void RestartGame() {
+            _lastWinner = null;
+            
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                tongItsPlayer.chips.ResetChips();
+            }
+            
+            bettingPile.ResetChips();
+            jackpotPile.ResetChips();
+            gameEndScreen.Hide();
+            
+            StartNewRound();
+        }
         
         public void StartNewRound() {
+            
+            
             if (!cardDeck.HasSpawnedCards) {
                 cardDeck.SpawnCards();
             }
@@ -47,6 +67,10 @@ namespace NordicBibo.Runtime.Gameplay {
         private void OnDestroy() {
             TongItsPlayer.OnDiscard -= EndPlayerTurn;
             TongItsPlayer.OnHandEmptied -= EndByTongIts;
+        }
+
+        private void EndGame(bool playerWon) {
+            gameEndScreen.Show(playerWon);
         }
 
         private void EndPlayerTurn(TongItsPlayer playerTurnEnded) {

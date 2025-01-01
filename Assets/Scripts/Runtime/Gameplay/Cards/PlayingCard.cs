@@ -15,8 +15,6 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         private const string SELECT_KEY = "Select";
         private const string DRAG_KEY = "Drag";
 
-        public float tempPivotThreshold;
-        
         [Header("Damping")]
         public float pivotMoveDamping;
         public float pivotRotationMaxDelta;
@@ -33,7 +31,6 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
 
         private bool _selected;
         private bool _hovered;
-        private float _tempPivotThresholdSqr;
         private EffectTransform _transformOffset;
         private Vector3 _positionVel;
         private Vector3 _scaleVel;
@@ -101,28 +98,17 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         
         private void Awake() {
             _drawSound = GetComponent<AudioSource>();
-            _tempPivotThresholdSqr = tempPivotThreshold * tempPivotThreshold;
         }
 
         private void Update() {
             StepEffects();
 
-            if (TempPivot && TempPivotIsBeyondThreshold()) {
+            if (TempPivot) {
                 FollowTempPivot();
             }
             else {
                 FollowStackPivot();
             }
-        }
-
-        private bool TempPivotIsBeyondThreshold() {
-            Vector3 tempPivotFlat = TempPivot.position;
-            tempPivotFlat.z = 0;
-            
-            Vector3 pivotFlat = Pivot.position;
-            pivotFlat.z = 0;
-            
-            return (tempPivotFlat - pivotFlat).sqrMagnitude > _tempPivotThresholdSqr;
         }
 
         private void FollowTempPivot() {

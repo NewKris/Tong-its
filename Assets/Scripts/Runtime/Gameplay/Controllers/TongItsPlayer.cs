@@ -30,6 +30,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         
         public float StockDrawTime { get; private set; }
         public int Tally { get; private set; }
+        public bool Busted => chips.Chips <= 0;
 
         public void SetNextWinner(bool isNextWinner) {
             chipSprite.color = isNextWinner ? Color.yellow : Color.white;

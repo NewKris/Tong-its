@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76ac323accbd40aeb8faa63e776a83f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempPivotThreshold: 1
-  pivotMoveDamping: 0.02
+  tempPivotThreshold: 0.5
+  pivotMoveDamping: 0.03
   pivotRotationMaxDelta: 500
   pitchStep: 0.02
   maxPitch: 2

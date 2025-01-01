@@ -9,6 +9,11 @@ namespace NordicBibo.Runtime.Gameplay.Chips.Simple {
         
         public int Chips { get; private set; }
 
+        public void ResetChips() {
+            Chips = initialCount;
+            onChipsChanged.Invoke(Chips);
+        }
+
         public static void MoveChips(ChipHolder from, ChipHolder to, int count) {
             int chipsToMove = Math.Min(from.Chips, count);
             
