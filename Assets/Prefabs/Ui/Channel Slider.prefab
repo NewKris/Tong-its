@@ -494,9 +494,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6637434380638654616}
-  - component: {fileID: 3199069325659282264}
   - component: {fileID: 3889454442196272552}
-  - component: {fileID: 4236289829648892157}
+  - component: {fileID: 5218038197243158809}
+  - component: {fileID: 4627512113443971137}
   m_Layer: 5
   m_Name: Channel Slider
   m_TagString: Untagged
@@ -525,21 +525,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 94.1}
   m_SizeDelta: {x: 300, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3199069325659282264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7559708637220514214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22b728419382442984461a8fe6d2d31c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 3773760577803245265}
-  targetChannel: 0
-  audioController: {fileID: 0}
 --- !u!82 &3889454442196272552
 AudioSource:
   m_ObjectHideFlags: 0
@@ -636,7 +621,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4236289829648892157
+--- !u!114 &5218038197243158809
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -645,10 +630,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 7559708637220514214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f89e2a2fbd6413fbd9eb59b61310ac9, type: 3}
+  m_Script: {fileID: 11500000, guid: f7acf839075240079300fea6d25ecf02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldown: 0.5
+  playCooldown: 0.2
+--- !u!114 &4627512113443971137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7559708637220514214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4766649be649469d6146c6afd4caae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 7ee094ef7c4b62447b87a83312d6ab66, type: 2}
+  mixer: {fileID: 24100000, guid: db2af8c661edf264893dc6ba746f77b0, type: 2}
+  samplePlayer: {fileID: 5218038197243158809}
 --- !u!1 &8021544927427913165
 GameObject:
   m_ObjectHideFlags: 0
