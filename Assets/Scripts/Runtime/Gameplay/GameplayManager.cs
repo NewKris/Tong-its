@@ -9,7 +9,8 @@ namespace NordicBibo.Runtime.Gameplay {
 
         private void Start() {
             if (playOnStart) {
-                engine.StartNewRound();
+                engine.cardDeck.SpawnCards();
+                engine.RestartGame();
             }
         }
     }

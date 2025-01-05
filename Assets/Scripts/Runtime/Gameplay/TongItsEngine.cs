@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NordicBibo.Runtime.Common;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Chips.Simple;
 using NordicBibo.Runtime.Gameplay.Controllers;
@@ -15,19 +16,16 @@ namespace NordicBibo.Runtime.Gameplay {
         public GlobalAudioPlayer audioPlayer;
         public CardDeck cardDeck;
         public Dealer dealer;
-        public TongItsPlayer[] players;
+        public Bank bank;
+        public List<TongItsPlayer> players;
         
-        [Header("Betting")]
-        public ChipHolder bettingPile;
-        public ChipHolder jackpotPile;
-        public int bettingCount;
-        public int jackpotCount;
-
         [Header("UI")] 
         public GameEndScreen gameEndScreen;
 
         private int _playerTurn;
+        private int _drawAnswers;
         private TongItsPlayer _lastWinner;
+        private readonly List<TongItsPlayer> _drawParticipants = new List<TongItsPlayer>();
 
         public void RestartGame() {
             _lastWinner = null;
@@ -35,28 +33,54 @@ namespace NordicBibo.Runtime.Gameplay {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 tongItsPlayer.chips.ResetChips();
             }
-            
-            bettingPile.ResetChips();
-            jackpotPile.ResetChips();
+
+            bank.ResetChips();
             gameEndScreen.Hide();
-            
-            StartNewRound();
-        }
-        
-        public void StartNewRound() {
-            
-            
-            if (!cardDeck.HasSpawnedCards) {
-                cardDeck.SpawnCards();
-            }
             
             StartCoroutine(SetUpRound());
         }
-        
-        public void EndByDraw() {
-            TongItsPlayer winner = FindDrawWinner();
-            TryPayoutPlayer(winner);
-            StartNewRound();
+
+        public void BeginDraw(TongItsPlayer player) {
+            _drawParticipants.Clear();
+            _drawParticipants.Add(player);
+            _drawAnswers = 1;
+            
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                tongItsPlayer.EndTurn();
+
+                if (tongItsPlayer != player) {
+                    tongItsPlayer.Challenge();
+                }
+            }
+        }
+
+        public void AcceptDraw(TongItsPlayer player) {
+            player.DrawChallengeTime = Time.time;
+            
+            _drawParticipants.Add(player);
+            _drawAnswers++;
+            
+            if (_drawAnswers == players.Count) {
+                EndByDraw();
+            }
+        }
+
+        public void DeclineDraw(TongItsPlayer player) {
+            _drawAnswers++;
+
+            if (_drawAnswers == players.Count) {
+                EndByDraw();
+            }
+        }
+
+        private void OnGUI() {
+            GUILayout.BeginArea(new Rect(10, 10, 300, 300));
+
+            if (GUILayout.Button("Restart Game")) {
+                RestartGame();
+            }
+            
+            GUILayout.EndArea();
         }
 
         private void Awake() {
@@ -69,10 +93,6 @@ namespace NordicBibo.Runtime.Gameplay {
             TongItsPlayer.OnHandEmptied -= EndByTongIts;
         }
 
-        private void EndGame(bool playerWon) {
-            gameEndScreen.Show(playerWon);
-        }
-
         private void EndPlayerTurn(TongItsPlayer playerTurnEnded) {
             playerTurnEnded.EndTurn();
 
@@ -81,19 +101,39 @@ namespace NordicBibo.Runtime.Gameplay {
                 return;
             }
             
-            _playerTurn = (_playerTurn + 1) % players.Length;
+            _playerTurn = (_playerTurn + 1) % players.Count;
             players[_playerTurn].StartTurn();
         }
         
         private void EndByTongIts(TongItsPlayer playerEmptiedHand) {
             TryPayoutPlayer(playerEmptiedHand);
-            StartNewRound();
+            StartCoroutine(new CoroutineSequenceBuilder()
+                .AddCoroutine(ShowWinner(playerEmptiedHand))
+                .AddCoroutine(SetUpRound())
+                .Build()
+            );
         }
 
         private void EndByStockOut() {
-            TongItsPlayer winner = FindStockOutWinner();
+            TongItsPlayer winner = WinnerFinder.FindStockOutWinner(players);
             TryPayoutPlayer(winner);
-            StartNewRound();
+            
+            StartCoroutine(new CoroutineSequenceBuilder()
+                .AddCoroutine(ShowWinner(winner))
+                .AddCoroutine(SetUpRound())
+                .Build()
+            );
+        }
+        
+        private void EndByDraw() {
+            TongItsPlayer winner = WinnerFinder.FindDrawWinner(_drawParticipants);
+            TryPayoutPlayer(winner);
+            
+            StartCoroutine(new CoroutineSequenceBuilder()
+                .AddCoroutine(ShowWinner(winner))
+                .AddCoroutine(SetUpRound())
+                .Build()
+            );
         }
 
         private IEnumerator SetUpRound() {
@@ -115,8 +155,8 @@ namespace NordicBibo.Runtime.Gameplay {
 
             yield return actionPadding;
 
-            PlaceBets();
-            PlaceJackpot();
+            bank.PlaceBets(players);
+            bank.PlaceJackpot(players);
             
             audioPlayer.PlayChipSound();
             
@@ -125,79 +165,29 @@ namespace NordicBibo.Runtime.Gameplay {
             _playerTurn = 0;
             players[0].StartTurn();
         }
-
-        private void PlaceBets() {
-            foreach (TongItsPlayer tongItsPlayer in players) {
-                ChipHolder.MoveChips(tongItsPlayer.chips, bettingPile, bettingCount);
-            }
-        }
-
-        private void PlaceJackpot() {
-            foreach (TongItsPlayer tongItsPlayer in players) {
-                ChipHolder.MoveChips(tongItsPlayer.chips, jackpotPile, jackpotCount);
-            }
-        }
         
         private bool HasValidGameParameters() {
-            return cardDeck.TotalCount - (players.Length * dealer.cardsPerPlayer) > 0;
+            return cardDeck.TotalCount - (players.Count * dealer.cardsPerPlayer) > 0;
         }
 
         private void TryPayoutPlayer(TongItsPlayer player) {
             // Player must win twice in a row to earn payout
             
-            _lastWinner?.SetNextWinner(false);
+            _lastWinner?.SetPotentialWinnerStatus(false);
             
             if (_lastWinner != player) {
                 _lastWinner = player;
-                _lastWinner.SetNextWinner(true);
+                _lastWinner.SetPotentialWinnerStatus(true);
                 return;
             };
             
-            ChipHolder.MoveChips(bettingPile, player.chips, bettingPile.Chips);
+            bank.PayoutPlayer(_lastWinner);
             audioPlayer.PlayChipSound();
             _lastWinner = null;
         }
 
-        private TongItsPlayer FindStockOutWinner() {
-            TongItsPlayer[] winnerCandidates = FindPlayerWithLowestPoints(players);
-
-            if (winnerCandidates.Length == 1) {
-                return winnerCandidates[0];
-            }
-            
-            return FindPlayerWhoLastPickedStockCard(winnerCandidates);
-        }
-        
-        private TongItsPlayer FindDrawWinner() {
-            TongItsPlayer[] winnerCandidates = FindPlayerWithLowestPoints(players);
-            
-            if (winnerCandidates.Length == 1) {
-                return winnerCandidates[0];
-            }
-            
-            // TODO: Make Draw caller lose on ties. Make other players win ties based on who challenged first
-            
-            return FindPlayerWhoLastPickedStockCard(winnerCandidates);
-        }
-
-        private static TongItsPlayer[] FindPlayerWithLowestPoints(TongItsPlayer[] candidates) {
-            int lowest = candidates.Select(tongItsPlayer => tongItsPlayer.Tally).Min();
-
-            return candidates.Where(player => player.Tally == lowest).ToArray();
-        }
-
-        private static TongItsPlayer FindPlayerWhoLastPickedStockCard(TongItsPlayer[] candidates) {
-            float latest = 0;
-            TongItsPlayer candidate = candidates[0];
-            
-            foreach (TongItsPlayer player in candidates) {
-                if (player.StockDrawTime < latest) continue;
-                
-                latest = player.StockDrawTime;
-                candidate = player;
-            }
-
-            return candidate;
+        private IEnumerator ShowWinner(TongItsPlayer winner) {
+            yield return new WaitForSeconds(3);
         }
     }
 }

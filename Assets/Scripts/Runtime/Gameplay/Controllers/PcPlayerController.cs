@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace NordicBibo.Runtime.Gameplay.Controllers {
     public class PcPlayerController : TongItsPlayer {
         [Header("PC Settings")]
         public float actionDelay;
+        public UnityEvent<TongItsPlayer> onAcceptChallenge;
+        public UnityEvent<TongItsPlayer> onDeclineChallenge;
         
         public override void StartTurn() {
             StartCoroutine(PlayTurn());
         }
 
         public override void EndTurn() {
+        }
+
+        public override void Challenge() {
+            onAcceptChallenge.Invoke(this);
         }
 
         private IEnumerator PlayTurn() {

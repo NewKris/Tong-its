@@ -18,6 +18,9 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         [Header("Buttons")] 
         public Button meldButton;
         public Button discardButton;
+
+        [Header("UI")] 
+        public GameObject challengePanel;
         
         private bool _hasDrawnCard;
         private readonly List<PlayingCard> _selectedCards = new List<PlayingCard>(16);
@@ -42,6 +45,10 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
             playerHand.SetInteractable(false);
             discardStack.SetInteractable(false);
             stockStack.SetInteractable(false);
+        }
+
+        public override void Challenge() {
+            challengePanel.SetActive(true);
         }
 
         public void CreateMeld() {

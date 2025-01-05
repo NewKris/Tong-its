@@ -15,8 +15,8 @@ namespace NordicBibo.Runtime.Gameplay {
         [Header("Juice")] 
         public float dealSpeed;
         
-        public IEnumerator DealCards(TongItsPlayer[] players) {
-            int maxDealCount = players.Length * cardsPerPlayer;
+        public IEnumerator DealCards(List<TongItsPlayer> players) {
+            int maxDealCount = players.Count * cardsPerPlayer;
             int dealtCount = 0;
             int targetPlayerHand = 0;
 
@@ -27,7 +27,7 @@ namespace NordicBibo.Runtime.Gameplay {
                     PlayingCard card = cardDeck.Peek();
                     card.MoveCardToStack(players[targetPlayerHand].playerHand, audioPlays);
                     
-                    targetPlayerHand = (targetPlayerHand + 1) % players.Length;
+                    targetPlayerHand = (targetPlayerHand + 1) % players.Count;
                     dealtCount++;
                     audioPlays++;
                     t = 0;
