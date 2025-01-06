@@ -9,6 +9,7 @@ namespace NordicBibo.Runtime {
         public AudioClip defaultMusic;
         public AudioSource source;
         public float musicFadeTime;
+        public bool playOnAwake;
         
         private void Awake() {
             if (Instance) {
@@ -17,7 +18,10 @@ namespace NordicBibo.Runtime {
             else {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                StartCoroutine(StartPlayMusic(defaultMusic));
+
+                if (playOnAwake) {
+                    StartCoroutine(StartPlayMusic(defaultMusic));
+                }
             }
         }
 

@@ -21,6 +21,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         private bool _isDraggingCard;
         private PlayerControls _controls;
         private PlayingCard _draggingCard;
+        private PlayingCard _tappedCard;
         
         private void Awake() {
             _controls = new PlayerControls();
@@ -29,8 +30,9 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
                 RayCast<PlayingCard>(cardMask, ToggleCard);
                 RayCast<CardStack>(stackMask, ClickOnStack);
             };
-            
-            _controls.MouseControls.Hold.performed += _ => RayCast<PlayingCard>(cardMask, DragCard);
+
+            _controls.MouseControls.Hold.started += _ => RayCast<PlayingCard>(cardMask, c => _tappedCard = c);
+            _controls.MouseControls.Hold.performed += _ => DragCard(_tappedCard);
             _controls.MouseControls.Hold.canceled += _ => ReleaseDraggingCard();
             
             _controls.Enable();
@@ -65,6 +67,10 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         private void DragCard(PlayingCard card) {
+            if (card == null) {
+                return;
+            }
+            
             _draggingCard = card;
                 
             card.TempPivot = mousePivot.transform;

@@ -22,9 +22,14 @@ namespace NordicBibo.Runtime.Gameplay {
         [Header("UI")] 
         public GameEndScreen gameEndScreen;
 
+        // Debug
+        private int _selectedPlayer;
+        
         private int _playerTurn;
         private int _drawAnswers;
         private TongItsPlayer _lastWinner;
+        private List<TongItsPlayer> _activePlayers = new List<TongItsPlayer>();
+        
         private readonly List<TongItsPlayer> _drawParticipants = new List<TongItsPlayer>();
 
         public void RestartGame() {
@@ -32,6 +37,7 @@ namespace NordicBibo.Runtime.Gameplay {
             
             foreach (TongItsPlayer tongItsPlayer in players) {
                 tongItsPlayer.chips.ResetChips();
+                tongItsPlayer.SetPotentialWinnerStatus(false);
             }
 
             bank.ResetChips();
@@ -45,7 +51,7 @@ namespace NordicBibo.Runtime.Gameplay {
             _drawParticipants.Add(player);
             _drawAnswers = 1;
             
-            foreach (TongItsPlayer tongItsPlayer in players) {
+            foreach (TongItsPlayer tongItsPlayer in _activePlayers) {
                 tongItsPlayer.EndTurn();
 
                 if (tongItsPlayer != player) {
@@ -60,7 +66,7 @@ namespace NordicBibo.Runtime.Gameplay {
             _drawParticipants.Add(player);
             _drawAnswers++;
             
-            if (_drawAnswers == players.Count) {
+            if (_drawAnswers == _activePlayers.Count) {
                 EndByDraw();
             }
         }
@@ -68,7 +74,7 @@ namespace NordicBibo.Runtime.Gameplay {
         public void DeclineDraw(TongItsPlayer player) {
             _drawAnswers++;
 
-            if (_drawAnswers == players.Count) {
+            if (_drawAnswers == _activePlayers.Count) {
                 EndByDraw();
             }
         }
@@ -78,6 +84,15 @@ namespace NordicBibo.Runtime.Gameplay {
 
             if (GUILayout.Button("Restart Game")) {
                 RestartGame();
+            }
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Select Player: ");
+            int.TryParse(GUILayout.TextField(_selectedPlayer.ToString(), 1), out _selectedPlayer);
+            GUILayout.EndHorizontal();
+            
+            if (GUILayout.Button("Bust Selected Player") && _selectedPlayer >= 0 && _selectedPlayer < players.Count) {
+                players[_selectedPlayer].chips.ClearChips();
             }
             
             GUILayout.EndArea();
@@ -101,8 +116,8 @@ namespace NordicBibo.Runtime.Gameplay {
                 return;
             }
             
-            _playerTurn = (_playerTurn + 1) % players.Count;
-            players[_playerTurn].StartTurn();
+            _playerTurn = (_playerTurn + 1) % _activePlayers.Count;
+            _activePlayers[_playerTurn].StartTurn();
         }
         
         private void EndByTongIts(TongItsPlayer playerEmptiedHand) {
@@ -115,7 +130,7 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         private void EndByStockOut() {
-            TongItsPlayer winner = WinnerFinder.FindStockOutWinner(players);
+            TongItsPlayer winner = WinnerFinder.FindStockOutWinner(_activePlayers);
             TryPayoutPlayer(winner);
             
             StartCoroutine(new CoroutineSequenceBuilder()
@@ -150,20 +165,28 @@ namespace NordicBibo.Runtime.Gameplay {
             }
             
             cardDeck.Shuffle();
+
+            _activePlayers = players.Where(player => !player.Busted).ToList();
+            bool humanPlayerNotBust = _activePlayers.Any(player => player.isHuman);
+
+            if (_activePlayers.Count <= 1 || !humanPlayerNotBust) {
+                gameEndScreen.Show(humanPlayerNotBust);
+                yield break;
+            }
             
-            yield return dealer.DealCards(players);
+            yield return dealer.DealCards(_activePlayers);
 
             yield return actionPadding;
 
-            bank.PlaceBets(players);
-            bank.PlaceJackpot(players);
+            bank.PlaceBets(_activePlayers);
+            bank.PlaceJackpot(_activePlayers);
             
             audioPlayer.PlayChipSound();
             
             yield return actionPadding;
             
             _playerTurn = 0;
-            players[0].StartTurn();
+            _activePlayers[0].StartTurn();
         }
         
         private bool HasValidGameParameters() {

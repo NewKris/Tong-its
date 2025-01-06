@@ -35,7 +35,7 @@ namespace NordicBibo.Runtime.Gameplay
                     ""id"": ""9eb47df7-1db9-4432-9549-79f0f18ddb46"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.2)"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -44,7 +44,7 @@ namespace NordicBibo.Runtime.Gameplay
                     ""id"": ""0bbcef9d-f3bf-4850-a167-a03cd0f7b9cf"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Tap"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -64,7 +64,7 @@ namespace NordicBibo.Runtime.Gameplay
                     ""name"": """",
                     ""id"": ""f1d5e933-b9d2-49db-a5e3-da2b4bb54ea5"",
                     ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": ""Tap"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Click"",

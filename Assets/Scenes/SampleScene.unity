@@ -2889,8 +2889,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00b08331e16466ca7b6cf8685a4908d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isMainPlayer: 1
   chips: {fileID: 1804301697117000027}
+  isHuman: 1
   playerHand: {fileID: 880017175}
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}
@@ -3805,8 +3805,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7016a297d7f14085bad616b67bbf474e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isMainPlayer: 0
   chips: {fileID: 1642793098}
+  isHuman: 0
   playerHand: {fileID: 1071247106}
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}
@@ -4494,8 +4494,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7016a297d7f14085bad616b67bbf474e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isMainPlayer: 0
   chips: {fileID: 1961283850}
+  isHuman: 0
   playerHand: {fileID: 1337997251}
   discardStack: {fileID: 2039308609}
   stockStack: {fileID: 1710935614}

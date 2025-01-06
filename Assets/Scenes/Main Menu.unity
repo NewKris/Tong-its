@@ -2572,7 +2572,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 0
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -2666,7 +2666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e046f05917a1a84fae2c1cf9ffca560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMusic: {fileID: 8300000, guid: dcfa8a9f48888ac4cb4691f6697d2f44, type: 3}
+  defaultMusic: {fileID: 8300000, guid: 1f7d8f0fd3b6fa94e9af2fda356e17f0, type: 3}
   source: {fileID: 2127666851}
   musicFadeTime: 2
 --- !u!4 &2127666853

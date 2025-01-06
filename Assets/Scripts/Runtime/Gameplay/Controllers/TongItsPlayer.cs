@@ -12,8 +12,8 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public static event Action<TongItsPlayer> OnDiscard;
         public static event Action<TongItsPlayer> OnHandEmptied;
 
-        public bool isMainPlayer;
         public ChipHolder chips;
+        public bool isHuman;
         
         [Header("Stacks")]
         public CardStack playerHand;
@@ -24,17 +24,20 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public VisualEffect drawEffect;
         public Image chipSprite;
 
-        public abstract void StartTurn();
-
-        public abstract void EndTurn();
-        public abstract void Challenge();
+        private bool _isNextWinner;
         
         public float StockDrawTime { get; private set; }
         public float DrawChallengeTime { get; set; }
         public int Tally { get; private set; }
-        public bool Busted => chips.Chips <= 0;
+        public bool Busted => chips.Chips <= 0 && !_isNextWinner;
+        
+        public abstract void StartTurn();
+
+        public abstract void EndTurn();
+        public abstract void Challenge();
 
         public void SetPotentialWinnerStatus(bool isNextWinner) {
+            _isNextWinner = isNextWinner;
             chipSprite.color = isNextWinner ? Color.yellow : Color.white;
         }
         
