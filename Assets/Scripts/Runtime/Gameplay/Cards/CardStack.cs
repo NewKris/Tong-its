@@ -15,22 +15,24 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
         private PivotMaster _pivots;
         private readonly List<PlayingCard> _cardsInStack = new List<PlayingCard>(56);
 
-        public PlayingCard this[int i] => _cardsInStack[i];
         public int Count => _cardsInStack.Count;
-
+        public PlayingCard this[int i] => _cardsInStack[i];
+        public List<int> CardIndices => _cardsInStack.Select(c => c.Index).ToList();
         public List<PlayingCard> CardsInStack => _cardsInStack;
+        public PlayingCard TopCard => _pivots.cardsFaceUp ? _cardsInStack[^1] : _cardsInStack[0];
+        
         private bool Interactable { get; set; }
 
-        public void SetCardFaceUp(bool faceUp) {
-            _pivots.SetCardFaceUp(faceUp);
+        public int CalculateTally() {
+            return _cardsInStack.Sum(card => PointCalculator.IndexToPoint(card.Index));
         }
         
         public PlayingCard IndexToCard(int i) {
             return _cardsInStack.Find(card => card.Index == i);
         }
-        
-        public List<int> GetCardIndices() {
-            return _cardsInStack.Select(card => card.Index).ToList();
+
+        public List<PlayingCard> IndicesToCards(List<int> indices) {
+            return _cardsInStack.Where(c => indices.Contains(c.Index)).ToList();
         }
         
         public void Shuffle() {
@@ -101,8 +103,7 @@ namespace NordicBibo.Runtime.Gameplay.Cards {
             
             if (onlyTopCard) {
                 _cardsInStack.ForEach(card => card.SetInteractable(false));
-                int index = _pivots.cardsFaceUp ? _cardsInStack.Count - 1 : 0;
-                _cardsInStack[index].SetInteractable(Interactable);
+                TopCard.SetInteractable(Interactable);
             }
             else {
                 _cardsInStack.ForEach(card => card.SetInteractable(Interactable));

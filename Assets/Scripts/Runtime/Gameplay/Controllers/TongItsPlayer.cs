@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
 using NordicBibo.Runtime.Gameplay.Chips.Simple;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VFX;
@@ -12,6 +13,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public static event Action<TongItsPlayer> OnDiscard;
         public static event Action<TongItsPlayer> OnHandEmptied;
 
+        public MeldCreator meldCreator;
         public ChipHolder chips;
         public bool isHuman;
         
@@ -19,6 +21,9 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public CardStack playerHand;
         public CardStack discardStack;
         public CardStack stockStack;
+
+        [Header("UI")] 
+        public TextMeshProUGUI pointDisplay;
         
         [Header("Effects")]
         public VisualEffect drawEffect;
@@ -32,10 +37,30 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public bool Busted => chips.Chips <= 0 && !_isNextWinner;
         
         public abstract void StartTurn();
-
         public abstract void EndTurn();
         public abstract void Challenge();
 
+        public void RevealPoints() {
+            if (!pointDisplay) {
+                return;
+            }
+            
+            pointDisplay.text = Tally.ToString();
+            pointDisplay.gameObject.SetActive(true);
+        }
+
+        public void HidePoints() {
+            if (!pointDisplay) {
+                return;
+            }
+            
+            pointDisplay.gameObject.SetActive(false);
+        }
+        
+        public void ForcePlayMelds() {
+            // TODO: Forcefully expose all melds in hand
+        }
+        
         public void SetPotentialWinnerStatus(bool isNextWinner) {
             _isNextWinner = isNextWinner;
             chipSprite.color = isNextWinner ? Color.yellow : Color.white;
@@ -65,13 +90,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         private void Awake() {
-            playerHand.onStackUpdated.AddListener(TallyCards);
-        }
-
-        private void TallyCards(List<PlayingCard> cards) {
-            // TODO: Make it not count valid melds in hand
-
-            Tally = cards.Sum(card => card.Tally);
+            playerHand.onStackUpdated.AddListener(_ => Tally = playerHand.CalculateTally());
         }
     }
 }

@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NordicBibo.Runtime.Gameplay.Utility {
     public static class PointCalculator {
         private const int COLUMN_COUNT = 13;
         private const int ROW_COUNT = 4;
         private const int CARD_COUNT = COLUMN_COUNT * ROW_COUNT;
+
+        public static int TallyCards(List<int> cards) {
+            return cards.Sum(IndexToPoint);
+        }
         
         public static int IndexToPoint(int i) {
             if (i >= CARD_COUNT) {

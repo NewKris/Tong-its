@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
+using NordicBibo.Runtime.Gameplay.Melds;
 using NordicBibo.Runtime.Gameplay.Utility;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,9 +13,6 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         // TODO Bug: If player has 1 card selected in hand at start of round and draws from stock,
         // the discard button remains not interactable
         
-        [Header("References")]
-        public MeldCreator playerMeldCreator;
-        
         [Header("Buttons")] 
         public Button meldButton;
         public Button discardButton;
@@ -23,9 +21,12 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         public GameObject challengePanel;
         
         private bool _hasDrawnCard;
+        private bool _hasActiveTurn;
         private readonly List<PlayingCard> _selectedCards = new List<PlayingCard>(16);
-
+        
         public override void StartTurn() {
+            _hasActiveTurn = true;
+            
             playerHand.SetInteractable(true);
             discardStack.SetInteractable(true);
             stockStack.SetInteractable(true);
@@ -39,6 +40,8 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         public override void EndTurn() {
+            _hasActiveTurn = false;
+            
             meldButton.interactable = false;
             discardButton.interactable = false;
             
@@ -52,7 +55,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         public void CreateMeld() {
-            MeldWithStack(_selectedCards, playerMeldCreator.FirstEmptyStack);
+            MeldWithStack(_selectedCards, meldCreator.FirstEmptyStack);
             _selectedCards.Clear();
             UpdateButtons();
         }
@@ -93,7 +96,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
                 discardStack.SetInteractable(false);
             }
             
-            playerMeldCreator.CreateMeld(cards.ToList(), stack);
+            meldCreator.CreateMeld(cards.ToList(), stack);
             this.CheckForEmptyHand();
         }
         
@@ -122,8 +125,8 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         }
 
         private void UpdateButtons() {
-            discardButton.interactable = CanDiscardSelection();
-            meldButton.interactable = CanMeldCards(_selectedCards.Where(card => card.ParentStack != stockStack));
+            discardButton.interactable = _hasActiveTurn && CanDiscardSelection();
+            meldButton.interactable = _hasActiveTurn && CanMeldCards(_selectedCards.Where(card => card.ParentStack != stockStack));
         }
         
         private PlayingCard GetCardToDiscard() {

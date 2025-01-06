@@ -8,6 +8,7 @@ using NordicBibo.Runtime.Gameplay.Chips.Simple;
 using NordicBibo.Runtime.Gameplay.Controllers;
 using NordicBibo.Runtime.Gameplay.Ui;
 using NordicBibo.Runtime.Utility;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -130,6 +131,8 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         private void EndByStockOut() {
+            ShowPoints(_activePlayers);
+            
             TongItsPlayer winner = WinnerFinder.FindStockOutWinner(_activePlayers);
             TryPayoutPlayer(winner);
             
@@ -141,6 +144,8 @@ namespace NordicBibo.Runtime.Gameplay {
         }
         
         private void EndByDraw() {
+            ShowPoints(_activePlayers);
+            
             TongItsPlayer winner = WinnerFinder.FindDrawWinner(_drawParticipants);
             TryPayoutPlayer(winner);
             
@@ -159,6 +164,8 @@ namespace NordicBibo.Runtime.Gameplay {
 
             WaitForSeconds actionPadding = new WaitForSeconds(0.25f);
 
+            HidePoints();
+            
             if (!cardDeck.HasAllCards) {
                 yield return dealer.ReturnAllCards();
                 yield return actionPadding;
@@ -207,6 +214,18 @@ namespace NordicBibo.Runtime.Gameplay {
             bank.PayoutPlayer(_lastWinner);
             audioPlayer.PlayChipSound();
             _lastWinner = null;
+        }
+
+        private void ShowPoints(List<TongItsPlayer> activePlayers) {
+            foreach (TongItsPlayer tongItsPlayer in activePlayers) {
+                tongItsPlayer.RevealPoints();
+            }
+        }
+        
+        private void HidePoints() {
+            foreach (TongItsPlayer tongItsPlayer in players) {
+                tongItsPlayer.HidePoints();
+            }
         }
 
         private IEnumerator ShowWinner(TongItsPlayer winner) {
