@@ -1,8 +1,7 @@
-using System;
 using TMPro;
 using UnityEngine;
 
-namespace NordicBibo.Runtime.Gameplay.Chips.Simple {
+namespace NordicBibo.Runtime.Gameplay.Chips {
     public class ChipCounter : MonoBehaviour {
         private TextMeshProUGUI _display;
 

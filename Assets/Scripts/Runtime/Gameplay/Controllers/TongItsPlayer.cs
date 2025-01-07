@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NordicBibo.Runtime.Gameplay.Cards;
-using NordicBibo.Runtime.Gameplay.Chips.Simple;
+using NordicBibo.Runtime.Gameplay.Chips;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,14 +27,14 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         
         [Header("Effects")]
         public VisualEffect drawEffect;
-        public Image chipSprite;
+        public SpriteRenderer chipSprite;
 
         private bool _isNextWinner;
         
         public float StockDrawTime { get; private set; }
         public float DrawChallengeTime { get; set; }
         public int Tally { get; private set; }
-        public bool Busted => chips.Chips <= 0 && !_isNextWinner;
+        public bool Busted => chips.Count <= 0 && !_isNextWinner;
         
         public abstract void StartTurn();
         public abstract void EndTurn();
@@ -63,7 +63,7 @@ namespace NordicBibo.Runtime.Gameplay.Controllers {
         
         public void SetPotentialWinnerStatus(bool isNextWinner) {
             _isNextWinner = isNextWinner;
-            chipSprite.color = isNextWinner ? Color.yellow : Color.white;
+            chipSprite.color = isNextWinner ? Color.yellow : Color.clear;
         }
         
         protected void Discard(PlayingCard card) {

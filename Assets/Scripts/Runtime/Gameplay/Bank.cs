@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NordicBibo.Runtime.Gameplay.Chips.Simple;
+using NordicBibo.Runtime.Gameplay.Chips;
 using NordicBibo.Runtime.Gameplay.Controllers;
 using UnityEngine;
 
@@ -16,18 +16,18 @@ namespace NordicBibo.Runtime.Gameplay {
         }
 
         public void PayoutPlayer(TongItsPlayer player) {
-            ChipHolder.MoveChips(bettingPile, player.chips, bettingPile.Chips);
+            bettingPile.MoveChips(player.chips, bettingPile.Count);
         }
         
         public void PlaceBets(List<TongItsPlayer> players) {
             foreach (TongItsPlayer tongItsPlayer in players) {
-                ChipHolder.MoveChips(tongItsPlayer.chips, bettingPile, bettingCount);
+                tongItsPlayer.chips.MoveChips(bettingPile, bettingCount);
             }
         }
 
         public void PlaceJackpot(List<TongItsPlayer> players) {
             foreach (TongItsPlayer tongItsPlayer in players) {
-                ChipHolder.MoveChips(tongItsPlayer.chips, jackpotPile, jackpotCount);
+                tongItsPlayer.chips.MoveChips(jackpotPile, jackpotCount);
             }
         }
     }

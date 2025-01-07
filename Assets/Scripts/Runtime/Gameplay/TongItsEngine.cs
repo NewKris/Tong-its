@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NordicBibo.Runtime.Common;
 using NordicBibo.Runtime.Gameplay.Cards;
-using NordicBibo.Runtime.Gameplay.Chips.Simple;
+using NordicBibo.Runtime.Gameplay.Chips;
 using NordicBibo.Runtime.Gameplay.Controllers;
 using NordicBibo.Runtime.Gameplay.Ui;
 using NordicBibo.Runtime.Utility;
@@ -93,7 +93,8 @@ namespace NordicBibo.Runtime.Gameplay {
             GUILayout.EndHorizontal();
             
             if (GUILayout.Button("Bust Selected Player") && _selectedPlayer >= 0 && _selectedPlayer < players.Count) {
-                players[_selectedPlayer].chips.ClearChips();
+                ChipHolder holder = players[_selectedPlayer].chips; 
+                holder.MoveChips(bank.jackpotPile, holder.Count);
             }
             
             GUILayout.EndArea();
