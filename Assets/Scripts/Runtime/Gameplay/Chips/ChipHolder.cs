@@ -35,11 +35,7 @@ namespace NordicBibo.Runtime.Gameplay.Chips {
             StartCoroutine(MoveChipsAsync(to, chipsToMove));
         }
 
-        private void Start() {
-            InitializeChips();
-        }
-
-        private void InitializeChips() {
+        public void InitializeChips() {
             _chips = new List<Chip>(initialCount);
             _originalChips = new List<Chip>(initialCount);
             

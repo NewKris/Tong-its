@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NordicBibo.Runtime.Gameplay.Chips;
 using NordicBibo.Runtime.Gameplay.Controllers;
@@ -7,12 +8,16 @@ namespace NordicBibo.Runtime.Gameplay {
     public class Bank : MonoBehaviour {
         public ChipHolder bettingPile;
         public ChipHolder jackpotPile;
+        public ChipHolder[] playerChips;
         public int bettingCount;
         public int jackpotCount;
 
+        public void Initialize() {
+            ForEachChipHolder(holder => holder.InitializeChips());
+        }
+        
         public void ResetChips() {
-            bettingPile.ResetChips();
-            jackpotPile.ResetChips();
+            ForEachChipHolder(holder => holder.ResetChips());
         }
 
         public void PayoutPlayer(TongItsPlayer player) {
@@ -28,6 +33,15 @@ namespace NordicBibo.Runtime.Gameplay {
         public void PlaceJackpot(List<TongItsPlayer> players) {
             foreach (TongItsPlayer tongItsPlayer in players) {
                 tongItsPlayer.chips.MoveChips(jackpotPile, jackpotCount);
+            }
+        }
+
+        private void ForEachChipHolder(Action<ChipHolder> callback) {
+            callback(jackpotPile);
+            callback(bettingPile);
+            
+            foreach (ChipHolder playerChip in playerChips) {
+                callback(playerChip);
             }
         }
     }

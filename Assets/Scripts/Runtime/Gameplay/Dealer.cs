@@ -48,15 +48,6 @@ namespace NordicBibo.Runtime.Gameplay {
             yield return ReturnCardsToDeck(stacksToClear);
         }
 
-        public IEnumerator ClearTable() {
-            List<CardStack> stacksToClear = new List<CardStack>(20);
-            
-            stacksToClear.Add(discardStack);
-            stacksToClear.AddRange(melds);
-
-            yield return ReturnCardsToDeck(stacksToClear);
-        }
-
         private IEnumerator ReturnCardsToDeck(List<CardStack> stacksToClear) {
             WaitForSeconds waitForSeconds = new WaitForSeconds(dealSpeed);
 

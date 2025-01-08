@@ -33,11 +33,16 @@ namespace NordicBibo.Runtime.Gameplay {
         
         private readonly List<TongItsPlayer> _drawParticipants = new List<TongItsPlayer>();
 
+        public void InitializeGame() {
+            cardDeck.SpawnCards();
+            bank.Initialize();
+            RestartGame();
+        }
+        
         public void RestartGame() {
             _lastWinner = null;
             
             foreach (TongItsPlayer tongItsPlayer in players) {
-                tongItsPlayer.chips.ResetChips();
                 tongItsPlayer.SetPotentialWinnerStatus(false);
             }
 
